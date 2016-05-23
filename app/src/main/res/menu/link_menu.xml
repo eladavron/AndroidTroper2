@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/open_external"
+          android:title="@string/openExternal"/>
+    <item android:id="@+id/open_new"
+          android:title="@string/menu_open_new"/>
+    <item android:id="@+id/link_fav"
+          android:title="@string/add_to_fav"/>
+    <item android:id="@+id/read_later"
+          android:title="@string/add_to_rl"/>
+</menu>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sortTypesData">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="sortTypes">
+        <item>Sort by Name</item>
+        <item>Oldest First</item>
+        <item>Newest First</item>
+    </string-array>
+    <string-array name="main_menu">
+        <item>Main Menu</item>
+        <item>Random</item>
+        <item>Recently Read</item>
+        <item>Favorites</item>
+        <item>Read-Later</item>
+        <item>Settings</item>
+    </string-array>
+</resources>

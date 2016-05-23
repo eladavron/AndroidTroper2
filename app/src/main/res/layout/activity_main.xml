@@ -1,0 +1,236 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                        android:id="@+id/main_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" >
+
+    <!-- The main content view -->
+
+    <RelativeLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/logo" />
+
+        <LinearLayout
+            android:id="@+id/gplus_clickable"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal|bottom"
+            android:clickable="true"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/clickable">
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#bfbfbf"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"/>
+
+            <TextView
+                android:id="@+id/gplusText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Gplus"
+                android:singleLine="false"
+                android:longClickable="false"
+                android:drawableLeft="@drawable/gplus_32"
+                android:drawablePadding="10dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAlignment="center"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <view
+        class="ambious.androidtroper.MainActivity$MyViewPager"
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <!-- The navigation drawer -->
+
+    <FrameLayout
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#2b4f74"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" >
+
+        <LinearLayout
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/main_menu_layout"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:id="@+id/main_random"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                    android:onClick="onMainMenuClick"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/main_random_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dip"
+                        android:text="@string/random"
+                        android:textAppearance="@android:style/TextAppearance.Holo.Large"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/main_recent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                    android:onClick="onMainMenuClick"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/main_recent_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dip"
+                        android:text="@string/recent"
+                        android:textAppearance="@android:style/TextAppearance.Holo.Large"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/main_favorites"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                    android:onClick="onMainMenuClick"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/main_favorites_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dip"
+                        android:text="@string/favorites"
+                        android:textAppearance="@android:style/TextAppearance.Holo.Large"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/main_readlater"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                    android:onClick="onMainMenuClick"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/main_readlater_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dip"
+                        android:text="@string/readlater"
+                        android:textAppearance="@android:style/TextAppearance.Holo.Large"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/main_settings"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                    android:onClick="onMainMenuClick"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/main_settings_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left|center_vertical"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dip"
+                        android:text="@string/settings"
+                        android:textAppearance="@android:style/TextAppearance.Holo.Large"
+                        android:textColor="@android:color/white" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Spinner
+                android:id="@+id/main_menu_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                style="@style/MainSpinnerItem"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/list_divider"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dip"
+                android:paddingBottom="2dip"
+                android:paddingLeft="5dip"
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:text="@string/openTabs"
+                android:visibility="gone" />
+
+            <ListView
+                android:id="@+id/tab_list"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:choiceMode="singleChoice"
+                android:divider="@android:color/white"
+                android:headerDividersEnabled="true"
+                android:dividerHeight="1dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+</android.support.v4.widget.DrawerLayout>

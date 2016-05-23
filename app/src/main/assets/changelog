@@ -1,0 +1,125 @@
+Android Troper 2.6
+===============
+
+2.6
+===
+Migrated entire project to Gradle
+[*] Fixed search by migrating to the newer Google Custom Search API
+
+2.5
+===
+The "Legacy" version for Android versions lower than 4.0 has been deprecated.
+If you still use it, upgrade your phone!
+[*] Fixed for February 2016 Site Update
+
+
+2.4
+===
+[*] Completely overhauled the guts of the search function!
+[*] Removed all warnings of the app's impending doom (it was averted).
+[*] Invalid Subpages will no longer appear in the dropdown list.
+
+2.3
+===
+[*] Quickfix for article names and subpages not parsing correctly
+[*] Quickfix for blank spaces instead of SOME images
+
+2.2
+===
+[*] Consolidated theme to comply with newest Android Design Guidelines
+[*] Made the exit confirmation dialog optional
+[*] Open tabs will now save when the program exits by default (can be turned off in the settings)
+[*] Fixed a common crash in the Search function
+[*] Fixed the rendering color of images and captions in night-mode
+[*] Search results will no longer show URLs (it's kind of redundant as it does show the article namesapce).
+[*] Fixed a bug with tablet-view not turning on until entering settings at least once
+
+2.1.3
+=====
+[*] Fixed a critical bug with loading pages
+
+2.1.2
+=====
+[*] Fixed several bugs with intercepting global TVTropes links
+[*] Generic error dialogs now let you save the error log to file.
+[*] Incoming intent (incoming links) errors now show a dialog instead of quitting.
+
+2.1.1
+=====
+[*] Tablet rendering is now selectable from the Settings page, but the default is auto-detected.
+[*] Text reflow under KitKat is now optional (it may cause scaling problems with some setups, blame google).
+[*] Fixed an issue with image quotes being misaligned in phones view.
+[*] Quotes are now the same size as the rest of the text
+[*] Spaced out trope example items a little bit.
+
+2.1
+===
+[*] Quotes are now indented properly.
+[*] Page layout rendering should now look better on tablets.
+[*] Advacned version number (the build numbers were getting crowded)...
+
+2.0.9c
+====
+[*] Fixed a bug where the 'Recently Read' list would always replace only the most recent item if the list reached its maximum number of items.
+[*] Fixed a bug where opening a new tab in the background would change the current tab's title.
+
+2.0.9
+====
+[*] The app can now intercept system-wide TVTropes links!
+[*] Fixed zoom for Android 4.4 (KitKat).
+[*] Added some safeguards to prevent a crash while navigating from the dropdown subpage menu to a null tab.
+[*] Fixed some visual bugs with the dropdown subpage navigation menu (nobody but me noticed it, but it was driving me insane!)
+[*] Improved duplicate item detection in favorites/read-later is now based on URL instead of the article's title
+[*] Fixed a bug where closing the last tab wouldn't revert the title and subpages to the default state.
+[*] The page title will remain single-lined even if too long.
+
+2.0.8
+====
+[*] Further improved theming issues
+[*] Sub-Page Dropdown Menu is no longer super-tiny
+
+2.0.7
+====
+[*] You can now long-press search result to add to favorites or 'read-later'
+[*] You can also add sub-pages directly to the 'read-later' list.
+[*] Added backup and restore in the Settings page (requires "WRITE_EXTERNAL_STORAGE" permission).
+[*] Fixed pages loading scrolled down
+[*] Fixed a lot of theming issues (bright text on bright background, dark text on dark background, etc).
+[*] Fixed an issue with the main menu not compressing correctly if the side-drawer is open.
+[*] Fixed a rare bug that would cause Search to crash on rotation
+
+2.0.4
+====
+[*] Fixed a crash on Android 4.0.* devices
+
+2.0.3
+=====
+[*] Fixed a crash on startup happening for some people.
+[*] Main Menu will now compress if it fills up half the screen or more (before it was arbitrary).
+[*] Context popups for external links will now be smaller and readable.
+[*] Alert dialog titles will no longer be too bright to read
+[*] Changed the color pallet to a more neutral one (as per KitKat design guidelines).
+
+2.0.2
+=====
+[*] On smaller screen sizes, main menu will be compressed to a drop-down when tabs are open
+[*] The inability to press "Back" after opening a favorite, search result, or any article from a list SHOULD have been fixed
+[*] Added "Exit" to the options menu.
+[*] When exiting the app with open tabs, you will have the option to save your session
+[*] The app will now start with the main menu open, you lazy bastards :-P
+[*] Updated the main logo
+
+2.0.1
+=====
+[*] Brought back the "Read-Later" list due to popular demand
+[*] Added the option to manually remove favorites
+[*] Minor bug-fixes
+
+2.0.0
+=====
+[*] Completely redesigned interface - built from scratch using native Android tools for that #HOLOYOLO look and usability!
+[*] The main menu is now accessible through the drawer to the left.
+[*] Added TABS! You can change tabs by swiping left and right, or by choosing an open tab from the list in the drawer to the left.
+[*] Subpages are now selectable from a drop-down menu in the title!
+[*] Favorites (replacing 'Read Later') and Recently Read lists are now sortable!
+[*] Search will now auto-suggest recently searched words.

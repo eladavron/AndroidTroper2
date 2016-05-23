@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:key="mainScreen">
+    <CheckBoxPreference android:title="@string/neverAskTitle"
+                        android:key="confirmExit"
+                        android:defaultValue="true"/>
+    <CheckBoxPreference android:title="@string/saveTabs"
+                        android:key="saveTabs"
+                        android:defaultValue="true"/>
+   <PreferenceCategory android:title="@string/tabSettings">
+
+        <CheckBoxPreference android:title="@string/newTab"
+                            android:key="newTab"/>
+        <CheckBoxPreference android:title="@string/moveToTab"
+                            android:key="moveNow"
+                            android:summary="@string/moveToTabDesc"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/displaySettings"
+                        android:key="displaySettings">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="nightMode"
+            android:title="@string/nightMode"
+            android:summary="@string/nightModeDesc"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="lockRotation"
+            android:summary="@string/lockRotationSum"
+            android:title="@string/lockRotation" />
+       <CheckBoxPreference
+           android:key="tabletView"
+           android:defaultValue="@bool/isTablet"
+           android:title="@string/tabletView"
+           android:summary="@string/tabletViewDesc"
+           />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="preventSleep"
+            android:summary="@string/preventScreenOffSum"
+            android:title="@string/preventScreenOff" />
+        <EditTextPreference
+            android:key="defaultZoom"
+            android:defaultValue="100"
+            android:title="@string/defaultZoom"
+            android:inputType="number"
+            android:maxLength="3"
+            android:numeric="integer"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="allowZoom"
+            android:title="@string/allowZoom"
+            android:summary="@string/allowZoomDesc"
+            />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="zoomToolbar"
+            android:title="@string/zoomToolbar"
+            android:summary="@string/zoomToolbarDesc"
+            android:dependency="allowZoom"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/Spoilers" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="showSpoilers"
+            android:summary="@string/showSpoilersDesc"
+            android:title="@string/showSpoilers" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="showSpoilers"
+            android:key="showWarning"
+            android:summary="@string/showWarningDesc"
+            android:title="@string/showWarning" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="showSpoilers"
+            android:key="highlightSpoilers"
+            android:summary="@string/highlightSpoilersDesc"
+            android:title="@string/highlightSpoilers" />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/recentList" >
+        <ListPreference
+            android:key="recentSortDefault"
+            android:title="@string/sortMethod"
+            android:entries="@array/sortTypes"
+            android:entryValues="@array/sortTypesData"
+            />
+
+        <EditTextPreference
+            android:defaultValue="15"
+            android:inputType="number"
+            android:key="recentMax"
+            android:maxLength="2"
+            android:numeric="integer"
+            android:title="@string/recentShow" />
+
+        <Preference
+            android:key="clearRecent"
+            android:title="@string/clearHistory"
+            android:summary="@string/currentInList"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/favorites">
+        <ListPreference
+            android:key="favSortDefault"
+            android:title="@string/sortMethod"
+            android:entries="@array/sortTypes"
+            android:entryValues="@array/sortTypesData"
+            />
+        <Preference
+            android:key="clearFavorites"
+            android:title="@string/clearFavorites"
+            android:summary="@string/favoriteCount"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/add_to_rl">
+        <ListPreference
+            android:key="rlSortDefault"
+            android:title="@string/sortMethod"
+            android:entries="@array/sortTypes"
+            android:entryValues="@array/sortTypesData"/>
+        <Preference
+            android:key="clearReadLater"
+            android:title="@string/clearReadLater"
+            android:summary="@string/rlCount"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/searchSettings">
+        <Preference
+            android:key="clearSuggestions"
+            android:title="@string/clearSuggestions"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/advancedSettings"
+        android:key="advanced">
+        <CheckBoxPreference
+            android:key="kitkatReflow"
+            android:defaultValue="true"
+            android:title="@string/kitkatReflow"/>
+        <CheckBoxPreference
+            android:key="reflowMargin"
+            android:defaultValue="true"
+            android:dependency="kitkatReflow"
+            android:title="@string/kitkatReflowPadding"
+            android:summary="@string/kitkatReflowPaddingWarning"/>
+
+        <EditTextPreference
+            android:defaultValue="10"
+            android:inputType="number"
+            android:key="timeout"
+            android:maxLength="2"
+            android:numeric="integer"
+            android:title="@string/connectionTimeout"
+            />
+        <Preference
+            android:key="backupSettings"
+            android:title="@string/backupSettings"/>
+        <Preference
+            android:key="restoreSettings"
+            android:title="@string/restoreSettings"/>
+    </PreferenceCategory>
+</PreferenceScreen>
