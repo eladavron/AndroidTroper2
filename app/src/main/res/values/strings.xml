@@ -161,10 +161,10 @@
     <!-- Update -->
     <string name="updateTitle">\"Android Troper\" Updated!</string>
     <string name="updateSummary">Android Troper has been updated!\n\n
-Version 2.6:\n
-• Fixed search - again!\n
-• This app is now open-sourced!\n
-  Check us out at GitHub (link in the About page!)!.\n
+Version 2.7:\n
+• Search now uses TVTropes.org\'s results page.\n
+• Since this is a new implementation - expects some issues.\n
+• Hey, it\'s ugly but at least it sort of works.\n
 \n
 Don\'t worry, this message only appears once per update!</string>
 </resources>

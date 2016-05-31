@@ -19,19 +19,46 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.*;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Html;
 import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.*;
+import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
+import android.widget.ShareActionProvider;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -47,6 +74,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+
+import static java.util.regex.Pattern.matches;
+
 public class MainActivity extends FragmentActivity {
 
     /**
@@ -251,6 +281,8 @@ public class MainActivity extends FragmentActivity {
         });
         handleIntent(getIntent());
     }
+
+
 
     private void restoreTabs()
     {
@@ -970,63 +1002,64 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    /**
-     * Intercept the "KeyDown" event
-     * @param keyCode the key code.
-     * @param event they key event triggered.
-     * @return true if handled, false if not.
-     */
+    @Override
+    public void onBackPressed ()
+    {
+        //Detect if current view is an article view
+        if (_tabList.getCount() <= 0 || _pager.getCurrentItem() == -1)
+        {
+            confirmExit();
+            return;
+        }
+        //If the drawer is open, simple close it
+        if (_drawerLayout.isDrawerOpen(_mainFrame))
+        {
+            _drawerLayout.closeDrawer(_mainFrame);
+            return;
+        }
+        int _current = _pager.getCurrentItem();
+        ArticleFragment _visibleFragment = _fragmentAdapter.get(_current);
+        if (_blockKey)
+        {
+            Log.d(LOG_TAG,"Animation pending, blocking 'Back' key!");
+            return;
+        }
+        if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null && _pager.getWebView(_current).getVisibility() == View.VISIBLE) //If it's currently loading something AND there's an underlying webpage
+        {
+            _pager.getVisibleArticle().getArticleFetcher().cancel(true);
+            _pager.getLoadingScreen(_pager.getCurrentItem()).setVisibility(View.GONE);
+            invalidateTitle();
+            return;
+        } else if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null && _pager.getWebView(_current).getVisibility() == View.GONE) //If it's currently loading something but there's NO  underlying webpage
+        {
+            _pager.getVisibleArticle().getArticleFetcher().cancel(true);
+            removeTab(_current);
+            return;
+        } else if (_visibleFragment != null && _visibleFragment.getHistorySize() > 1) //There's way to go back
+        {
+            _visibleFragment.History.pop(); //Removes the last one, as it is the CURRENT one
+            Article lastItem = _visibleFragment.History.peek();
+            parseArticle (lastItem,false);
+            return;
+        }
+        else if (_visibleFragment != null && _visibleFragment.getHistorySize() == 1) //No way back, it's the last page.
+        {
+            removeTab(_pager.getCurrentItem());
+            return;
+        }
+        else
+        {
+            confirmExit();
+            return;
+        }
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) //Intercept "Back" key
         {
-            //Detect if current view is an article view
-            if (_tabList.getCount() <= 0 || _pager.getCurrentItem() == -1)
-            {
-                confirmExit();
-                return true;
-            }
-            //If the drawer is open, simple close it
-            if (_drawerLayout.isDrawerOpen(_mainFrame))
-            {
-                _drawerLayout.closeDrawer(_mainFrame);
-                return true;
-            }
-            int _current = _pager.getCurrentItem();
-            ArticleFragment _visibleFragment = _fragmentAdapter.get(_current);
-            if (_blockKey)
-            {
-                Log.d(LOG_TAG,"Animation pending, blocking 'Back' key!");
-                return false;
-            }
-            if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null && _pager.getWebView(_current).getVisibility() == View.VISIBLE) //If it's currently loading something AND there's an underlying webpage
-            {
-                _pager.getVisibleArticle().getArticleFetcher().cancel(true);
-                _pager.getLoadingScreen(_pager.getCurrentItem()).setVisibility(View.GONE);
-                invalidateTitle();
-                return true;
-            } else if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null && _pager.getWebView(_current).getVisibility() == View.GONE) //If it's currently loading something but there's NO  underlying webpage
-            {
-                _pager.getVisibleArticle().getArticleFetcher().cancel(true);
-                removeTab(_current);
-                return true;
-            } else if (_visibleFragment != null && _visibleFragment.getHistorySize() > 1) //There's way to go back
-            {
-                _visibleFragment.History.pop(); //Removes the last one, as it is the CURRENT one
-                Article lastItem = _visibleFragment.History.peek();
-                parseArticle (lastItem,false);
-                return true;
-            }
-            else if (_visibleFragment != null && _visibleFragment.getHistorySize() == 1) //No way back, it's the last page.
-            {
-                removeTab(_pager.getCurrentItem());
-                return true;
-            }
-            else
-            {
-                confirmExit();
-                return true;
-            }
+            onBackPressed();
+            return true;
         }
         //Nothing intercepted, call global handler.
         return super.onKeyDown(keyCode, event);
@@ -2439,7 +2472,8 @@ public class MainActivity extends FragmentActivity {
                 _name = url;
                 url = "http://tvtropes.org/pmwiki/pmwiki.php/" + url; //Alter it to a global link
             }
-            else if (!_u.equals("tvtropes.org")) //If it's not a TVTropes link
+            boolean isTvTropes = matches("(?i)^(https?:\\/\\/)?(www\\.)?(tvtropes\\.org\\/pmwiki\\/pmwiki\\.php\\/)(\\S)*",url);
+            if (!isTvTropes) //If it's not a TVTropes link
             {
                 view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
