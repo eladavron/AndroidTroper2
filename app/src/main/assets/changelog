@@ -1,6 +1,10 @@
 Android Troper 2.6
 ===============
 
+2.7
+===
+[*] Search feature now just displays the website's search result page
+
 2.6
 ===
 Migrated entire project to Gradle
