@@ -6,7 +6,7 @@
 
 ## Known Issues
 R - Release, B - Beta, C - Code
-* There is no implementation for search errors (R, B, C)
-* Settings page is not affected by theme selection (B, C)
-* Checkboxes appear in white in day mode (B, C)
-* The "Don't ask me again" label and checkbox aren't visible in day mode (B, C)
+* #2: There is no implementation for search errors (R, B, C)
+* #3: Settings page is not affected by theme selection (B, C)
+* #4: Checkboxes appear in white in day mode (B, C)
+* #5: The "Don't ask me again" label and checkbox aren't visible in day mode (B, C)
