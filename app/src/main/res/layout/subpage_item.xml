@@ -8,17 +8,19 @@
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+    android:background="@color/at_dark"
     >
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@android:id/text1"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:textAppearance="?android:attr/textAppearanceListItemSmall"
-              android:textColor="@android:color/white"
-              android:layout_centerVertical="true"
-              android:layout_alignParentLeft="true"
-              android:paddingEnd="22dp"/>
+        android:id="@android:id/text1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@android:color/white"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:paddingEnd="@android:dimen/app_icon_size"
+        android:paddingRight="@android:dimen/app_icon_size"/>
 
     <ImageButton
         android:id="@+id/addToReadLater"
@@ -33,38 +35,3 @@
         />
 
 </RelativeLayout>
-    <!--<?xml version="1.0" encoding="utf-8"?>-->
-    <!--&lt;!&ndash; Represents a single item in the subpage dropdown &ndash;&gt;-->
-    <!--<RelativeLayout-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:id="@+id/dropdown_container"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:descendantFocusability="blocksDescendants"-->
-    <!--android:background="?android:attr/activatedBackgroundIndicator"-->
-    <!--android:minHeight="?android:attr/listPreferredItemHeightSmall"-->
-    <!--android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"-->
-    <!--android:paddingRight="?android:attr/listPreferredItemPaddingRight">-->
-
-    <!--<TextView-->
-    <!--android:id="@android:id/text1"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="fill_parent"-->
-    <!--android:textAppearance="?android:attr/textAppearanceListItemSmall"-->
-    <!--android:textColor="@android:color/white"-->
-    <!--android:gravity="center_vertical|left"-->
-    <!--android:minHeight="?android:attr/listPreferredItemHeightSmall"-->
-    <!--android:padding="5dp"-->
-    <!--android:singleLine="true"-->
-    <!--android:layout_toLeftOf="@+id/addToReadLater"/>-->
-
-    <!--<ImageButton-->
-    <!--android:id="@+id/addToReadLater"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:focusable="false"-->
-    <!--android:background="@android:color/transparent"-->
-    <!--android:src="@drawable/ic_action_read_later"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:layout_centerVertical="true"/>-->
-    <!--</RelativeLayout>-->

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:layout_width="260dp"
+    android:id="@+id/tab_list"
+    android:choiceMode="singleChoice"
+    android:headerDividersEnabled="true"
+    android:dividerHeight="1dp"/>

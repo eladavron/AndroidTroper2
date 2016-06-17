@@ -12,9 +12,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.*;
 import android.provider.SearchRecentSuggestions;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.*;
+import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,19 +25,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
 
 /**
  * Created by Elad on 13/09/13.
  */
-public class SettingsActivity extends FragmentActivity {
+public class SettingsActivity extends AppCompatActivity {
     private final int FLAG_SETTINGS = 0;
     private final int FLAG_ABOUT = 1;
 
@@ -42,18 +47,19 @@ public class SettingsActivity extends FragmentActivity {
     private SharedPreferences _favoriteSettings;
     private SharedPreferences _readLaterSettings;
     SearchRecentSuggestions suggestions;
+    ActionBar _actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) { //OnCreate of the settings activity
         super.onCreate(savedInstanceState);
         _mainPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         suggestions = new SearchRecentSuggestions(this,MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
-
-        //Set theme//
-        if (_mainPreferences.getBoolean("nightMode",false))
-            setTheme(R.style.SecondaryTheme_Dark);
-        else
-            setTheme(R.style.SecondaryTheme);
+        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.action_bar, root, false);
+        setSupportActionBar(bar);
+        _actionBar = getSupportActionBar();
+        _actionBar.setDisplayHomeAsUpEnabled(true);
+        root.addView(bar, 0); // insert at top
 
         //Set Rotation//
         if (_mainPreferences.getBoolean("lockRotation",false))
@@ -65,20 +71,16 @@ public class SettingsActivity extends FragmentActivity {
         Intent _intent = getIntent();
         if (_intent == null || _intent.getFlags() == FLAG_SETTINGS)
         {
-            getFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .replace(android.R.id.content, new SettingsFragment())
                     .commit();
-            getActionBar().setHomeButtonEnabled(true); //Enables Sets the home button
-            getActionBar().setDisplayHomeAsUpEnabled(true); //Makes the home button go back
-            getActionBar().setTitle(getString(R.string.app_name) + ": " + getString(R.string.settings));
+            _actionBar.setTitle(getString(R.string.app_name) + ": " + getString(R.string.settings));
         } else if (_intent.getFlags() == FLAG_ABOUT)
         {
-            getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, (android.app.Fragment) new AboutFragment())
+            getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new AboutFragment())
                     .commit();
-            getActionBar().setHomeButtonEnabled(true); //Enables Sets the home button
-            getActionBar().setDisplayHomeAsUpEnabled(true); //Makes the home button go back
-            getActionBar().setTitle(getString(R.string.app_name));
+            _actionBar.setTitle(getString(R.string.app_name));
         }
     }
 
@@ -97,9 +99,8 @@ public class SettingsActivity extends FragmentActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
-    public class AboutFragment extends android.app.Fragment
-    {
-        private final String LOG_TAG = "AndroidTroper: About";
+    public class AboutFragment extends Fragment {
+        private final String LOG_TAG = "AndroidTroper";
         PackageInfo packageInfo;
 
         @Override
@@ -109,16 +110,16 @@ public class SettingsActivity extends FragmentActivity {
                 packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                 // Inflate the layout for this fragment
                 View returnView = inflater.inflate(R.layout.about, container, false);
+
+                //Set up toolbar
+                Toolbar myToolbar = (Toolbar) findViewById(R.id.app_bar);
+                setSupportActionBar(myToolbar);
+                _actionBar = getSupportActionBar();
+                _actionBar.setDisplayHomeAsUpEnabled(true);
+
                 TextView _version = (TextView) returnView.findViewById(R.id.versionString);
                 TextView _gitHub = (TextView) returnView.findViewById(R.id.GitHub);
                 _version.setText(getString(R.string.Version) + " " + packageInfo.versionName);
-                LinearLayout _gplus = (LinearLayout) returnView.findViewById(R.id.gplus_clickable);
-                _gplus.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://plus.google.com/117422405870944934987")));
-                    }
-                });
                 ImageButton _ccImage = (ImageButton) returnView.findViewById(R.id.ccButton);
                 _gitHub.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -191,8 +192,8 @@ public class SettingsActivity extends FragmentActivity {
             }
         }
     }
-    public class SettingsFragment extends PreferenceFragment {
-        private final String LOG_TAG = "AndroidTroper: Preferences";
+    public class SettingsFragment extends PreferenceFragmentCompat {
+        private final String LOG_TAG = "AndroidTroper";
         private SharedPreferences _recentSettings;
 
         @Override
@@ -209,7 +210,7 @@ public class SettingsActivity extends FragmentActivity {
                     .commit();
 
             //Nightmode Settings//
-            CheckBoxPreference _nightMode = (CheckBoxPreference)findPreference("nightMode");
+            Preference _nightMode = findPreference("nightMode");
             if (_nightMode == null)
             {
                 Log.e(LOG_TAG,"Could not find element NightMode");
@@ -218,10 +219,10 @@ public class SettingsActivity extends FragmentActivity {
             _nightMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     if (newValue.toString().equals("true")) {
-                        setTheme(R.style.AppTheme);
+                        setTheme(R.style.AppDark);
                         return true;
                     } else if (newValue.toString().equals("false")) {
-                        setTheme(R.style.AppTheme);
+                        setTheme(R.style.AppLight);
                         return true;
                     } else {
                         Log.e("LOG_TAG", "New settings for nightmode not validated correctly. Its result: " + newValue.toString());
@@ -472,6 +473,11 @@ public class SettingsActivity extends FragmentActivity {
             }
         }
 
+        @Override
+        public void onCreatePreferences(Bundle bundle, String s) {
+            
+        }
+
         private void performBackup() {
             try {
                 File sd = Environment.getExternalStorageDirectory();
@@ -504,7 +510,6 @@ public class SettingsActivity extends FragmentActivity {
                 Toast.makeText(getApplicationContext(),getString(R.string.backupError),Toast.LENGTH_LONG).show();
             }
         }
-
 
         private void restoreBackup()
         {

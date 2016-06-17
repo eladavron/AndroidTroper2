@@ -13,6 +13,7 @@
     <string name="recent">Recently Read</string>
     <string name="drawerOpen">Open Drawer</string>
     <string name="drawerClose">Close Drawer</string>
+    <string name="tabClose">Close Tab</string>
     <string name="openTabs">Open Tabs</string>
     <string name="Loading">Loading</string>
     <string name="Parsing">Parsing</string>
@@ -142,11 +143,12 @@
     <!-- About -->
     <string name="byline">by Elad Avron</string>
     <string name="Version">Version</string>
-    <string name="Gplus">For News, Updates, Bug Reports or just to say \"Hi\", visit us on Google+</string>
+    <string name="WebsiteClick">For News, Updates, Bug Reports or just to say \"Hi\", visit our new website by clicking here!</string>
+    <string name="GitHubClick">Or click here to visit our GitHub repository to take a peek at the source code</string>
     <string name="cc">This work is licensed under a <a href='http://creativecommons.org/licenses/by-nc-sa/3.0/'>Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</string>
     <string name="clickForDetails">Click for details...</string>
     <string name="usesLibraries"><u>This application uses the following libraries:</u></string>
-    <string name="jsoup">• <a href='http://jsoup.org/'>jsoup-1.7.2</a></string>
+    <string name="jsoup">• <a href='http://jsoup.org/'>jsoup-1.9.2</a></string>
     <string name="assets">Assets in this app were created using the <a href='http://android-ui-utils.googlecode.com/hg/asset-studio/dist/index.html'>Android Asset Studio</a>. It is highly recommended!</string>
     <string name="changelog"><u>Changelog:</u></string>
     <string name="github">Source code available at <a href='https://github.com/eladavron/AndroidTroper2'>GitHub</a>!</string>
@@ -161,10 +163,11 @@
     <!-- Update -->
     <string name="updateTitle">\"Android Troper\" Updated!</string>
     <string name="updateSummary">Android Troper has been updated!\n\n
-Version 2.7:\n
-• Search now uses TVTropes.org\'s results page.\n
-• Since this is a new implementation - expects some issues.\n
-• Hey, it\'s ugly but at least it sort of works.\n
-\n
-Don\'t worry, this message only appears once per update!</string>
+Version 2.8:\n
+        • Refreshed the app\'s themes.\n
+        • Updated a lot of behind-the-scenes stuff.\n
+        • Replaced all references to the Google+ page with links to the new website.\n
+        • Seriously, forget that old page. If you wanna reach me, use the new page!\n
+        A more detailed update log can be found in the \"About\" screen or on our GitHub.\n\n
+        Don\'t worry, this message only appears once per update!</string>
 </resources>

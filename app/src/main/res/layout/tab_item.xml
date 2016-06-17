@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/ReadListItemRow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-android:gravity="fill_horizontal"
-android:descendantFocusability="blocksDescendants"
-                android:background="?android:attr/activatedBackgroundIndicator"
-                android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    >
+    android:id="@+id/ReadListItemRow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="fill_horizontal"
+    android:descendantFocusability="blocksDescendants"
+    android:drawSelectorOnTop="true"
+    android:background="@drawable/tab_selector_background"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall">
     <TextView
         android:id="@+id/tab_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         android:gravity="center_vertical"
-        android:textColor="#fff"
         android:focusable="false"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="false"
@@ -27,8 +26,9 @@ android:descendantFocusability="blocksDescendants"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_close"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/tabClose" />
 
 </RelativeLayout>

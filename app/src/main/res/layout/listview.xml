@@ -5,9 +5,13 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/action_bar"/>
+
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@android:id/list"
+        android:id="@+id/myListView"
         android:layout_gravity="center"/>
 </LinearLayout>

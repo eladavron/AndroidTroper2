@@ -1,6 +1,5 @@
 package ambious.androidtroper;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
@@ -19,14 +18,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.Time;
 import android.util.AttributeSet;
@@ -49,13 +54,9 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SearchView;
-import android.widget.ShareActionProvider;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +78,7 @@ import java.util.Stack;
 
 import static java.util.regex.Pattern.matches;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends AppCompatActivity {
 
     /**
      * Global Variables
@@ -95,14 +96,14 @@ public class MainActivity extends FragmentActivity {
     /**
      * Instance Variables: Main Interface
      */
+    private DrawerLayout _main_layout;
     private DrawerLayout _drawerLayout;
-    private FrameLayout _mainFrame;
     private ListView _tabList;
     private String _title;
     private ActionBarDrawerToggle _drawerToggle;
     private final int _menuMinSize = 96;
     private ShareActionProvider _shareActionProvider;
-    private TextView _titleBar;
+    ActionBar _actionBar;
     private boolean _isLoaded = false;
 
     /**
@@ -113,6 +114,7 @@ public class MainActivity extends FragmentActivity {
     private SharedPreferences _favoriteSettings;
     private SharedPreferences _readLaterSettings;
     private static SharedPreferences _tabState;
+    private boolean _nightMode;
 
     /**
      * Tab variables
@@ -132,6 +134,7 @@ public class MainActivity extends FragmentActivity {
         Log.d(LOG_TAG,"=====");
         Log.d(LOG_TAG,"Creating activity...");
         super.onCreate(savedInstanceState);
+
 
         //Settings//
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -153,98 +156,62 @@ public class MainActivity extends FragmentActivity {
         Log.d(LOG_TAG,"Setting up main interface...");
         //Load the main view!!//
         setContentView(R.layout.activity_main);
-        setNightMode(_mainPreferences.getBoolean("nightMode",false));
 
         //Set interface variables//
-        int titleId = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-        _titleBar = (TextView)findViewById(titleId);
-        _drawerLayout = (DrawerLayout) findViewById(R.id.main_layout);
+        _main_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        _drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         _tabList = (ListView) findViewById(R.id.tab_list);
-        _mainFrame = (FrameLayout) findViewById(R.id.left_drawer);
         _title = getString(R.string.app_name); //initial title
-        _drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, R.drawable.ic_drawer, R.string.drawerOpen, R.string.drawerClose)
+        _drawerToggle = new ActionBarDrawerToggle(this, _drawerLayout, R.string.drawerOpen, R.string.drawerClose)
         {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(_title);
+                _actionBar.setTitle(_title);
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(R.string.app_name);
+                _actionBar.setTitle(R.string.app_name);
             }
         };
 
-        LinearLayout _gplusView = (LinearLayout) findViewById(R.id.gplus_clickable);
-        _gplusView.setOnClickListener(new View.OnClickListener() {
+        LinearLayout _websiteClick = (LinearLayout) findViewById(R.id.WebsiteClickable);
+        _websiteClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://plus.google.com/117422405870944934987")));
+                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.eladavron.com/androidtroper/")));
             }
         });
 
-        //Set Icons for main menu//
-        ImageView _icon;
-        _icon = (ImageView) findViewById(R.id.main_random_img);
-        _icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_random));
-        _icon = (ImageView) findViewById(R.id.main_recent_img);
-        _icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_recent));
-        _icon = (ImageView) findViewById(R.id.main_favorites_img);
-        _icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_favorites));
-        _icon = (ImageView) findViewById(R.id.main_settings_img);
-        _icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_settings));
-        _icon = (ImageView) findViewById(R.id.main_readlater_img);
-        _icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_read_later));
-
-        Spinner spinner = (Spinner) findViewById(R.id.main_menu_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.main_menu,android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        LinearLayout _githubClick = (LinearLayout) findViewById(R.id.GithubClickable);
+        _githubClick.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position)
-                {
-                    case 1:
-                        mainMenuHandler(R.id.main_random);
-                        break;
-                    case 2:
-                        mainMenuHandler(R.id.main_recent);
-                        break;
-                    case 3:
-                        mainMenuHandler(R.id.main_favorites);
-                        break;
-                    case 4:
-                        mainMenuHandler(R.id.main_readlater);
-                        break;
-                    case 5:
-                        mainMenuHandler(R.id.main_settings);
-                        break;
-                    default:
-                        Log.e(LOG_TAG,"Spinner menu selected unexpected value: " + position);
-                        break;
-                }
-                parent.setSelection(0);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/eladavron/AndroidTroper2")));
             }
         });
+
 
         //Set interface settings//
         findViewById(R.id.content_frame).setKeepScreenOn(_mainPreferences.getBoolean("preventSleep",true));
 
+        //Setup Actiobar//
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(myToolbar);
+        _actionBar = getSupportActionBar();
+        _actionBar.setDisplayHomeAsUpEnabled(true);
+
         //Setup Drawer//
-        _drawerLayout.setDrawerListener(_drawerToggle);		// Set the drawer toggle as the DrawerListener
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+        _drawerLayout.addDrawerListener(_drawerToggle);		// Set the drawer toggle as the DrawerListener
+        View menuHeader = getLayoutInflater().inflate(R.layout.main_menu, null);
+        _tabList.addHeaderView(menuHeader);
 
         Log.d(LOG_TAG,"Setting up tab list...");
         //Setup tab list//
         _tabListAdapter = new TabListAdapter(this, R.layout.tab_item);
         _tabList.setAdapter(_tabListAdapter); //Set the adapter for the tab list view
         _tabList.setOnItemClickListener(new TabClickListener()); // Set the tab list's click listener
+
 
         Log.d(LOG_TAG,"Initializing tab elements...");
         //Init tab elements//
@@ -253,7 +220,7 @@ public class MainActivity extends FragmentActivity {
         FragmentManager _fm = getSupportFragmentManager();
         _pageAdapter = new ArticlePagerAdapter(_fm, _fragmentAdapter);
         _pager.setAdapter(_pageAdapter);
-        _pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        _pager.addOnPageChangeListener (new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
 
@@ -261,7 +228,7 @@ public class MainActivity extends FragmentActivity {
 
             @Override
             public void onPageSelected(int i) {
-                _tabList.setItemChecked(i, true);
+                _tabList.setItemChecked(i + 1, true); //The "position" refers to the position within the view, so it's always + 1 compared to the list
                 invalidateTitle();
                 invalidateOptionsMenu();
             }
@@ -272,14 +239,16 @@ public class MainActivity extends FragmentActivity {
             }
         });
         Log.d(LOG_TAG, "Activity Created.");
-        _mainFrame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        _main_layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
             @Override
             public void onGlobalLayout() {
                 _isLoaded = true;
             }
         });
+        setNightMode(_mainPreferences.getBoolean("nightMode",false));
         handleIntent(getIntent());
+        Log.d(LOG_TAG,"Theme is: " + this.getTheme().toString());
     }
 
 
@@ -307,9 +276,9 @@ public class MainActivity extends FragmentActivity {
                     newTab(_name,_url,false);
                 }
             }
-            int _current = _tabState.getInt("selectedTab",0);
-            _tabList.setItemChecked(_current,true);
-            _tabList.setSelection(_current);
+            int _current = _tabState.getInt("selectedTab",0); //The "position" refers to the position within the view, so it's always + 1 compared to the list
+            _tabList.setItemChecked(_current + 1,true); //Corrected for tablist offset
+            _tabList.setSelection(_current + 1); //Corrected for tablist offset
             _pager.setCurrentItem(_current);
             _tabState.edit().clear().commit();
         }
@@ -341,9 +310,9 @@ public class MainActivity extends FragmentActivity {
                     newTab(_name,_url,false);
                 }
             }
-            int _current = tabSession.getInt("selectedTab",0);
-            _tabList.setItemChecked(_current,true);
-            _tabList.setSelection(_current);
+            int _current = tabSession.getInt("selectedTab",0); //The "position" refers to the position within the view, so it's always + 1 compared to the list
+            _tabList.setItemChecked(_current + 1,true); //Corrected for tablist offset
+            _tabList.setSelection(_current + 1); //Corrected for tablist offset
             _pager.setCurrentItem(_current);
         }
     }
@@ -376,7 +345,7 @@ public class MainActivity extends FragmentActivity {
 //            state.putString("tabHtml" + i, _html);
         }
         state.putInt("tabCount",_tabCount);
-        state.putInt("selectedTab", _tabList.getSelectedItemPosition());
+        state.putInt("selectedTab", _tabList.getSelectedItemPosition() - 1); //The "position" refers to the position within the view, so it's always + 1 compared to the list
         Log.d(LOG_TAG,"Tabs saved.");
     }
 
@@ -412,13 +381,13 @@ public class MainActivity extends FragmentActivity {
         _pager.removeAllViews();
 
         super.onRestoreInstanceState(state);
-        _mainFrame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        _main_layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
             public void onGlobalLayout() {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    _mainFrame.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    _main_layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 } else {
-                    _mainFrame.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    _main_layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
                 restoreTabs(state);
             }
@@ -460,24 +429,19 @@ public class MainActivity extends FragmentActivity {
                 if (_isLoaded)
                     newTab(_name,_url,true);
                 else{
-                    _mainFrame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    _main_layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
                         public void onGlobalLayout() {
                             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                                _mainFrame.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                                _main_layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                             } else {
-                                _mainFrame.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                _main_layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                             }
                             newTab(__name,_url,true);
                         }
                     });
                 }
             }
-            else //An unregistered or 'regular' intent
-            {
-                _drawerLayout.openDrawer(_mainFrame);
-            }
-
         }
         catch (Exception e)
         {
@@ -516,9 +480,6 @@ public class MainActivity extends FragmentActivity {
             });
             CheckBox checkBox = new CheckBox(getApplicationContext());
             checkBox.setText(R.string.neverAsk);
-            checkBox.setTextColor(getResources().getColor(android.R.color.black));
-            int id = Resources.getSystem().getIdentifier("btn_check_holo_light", "drawable", "android");
-            checkBox.setButtonDrawable(id);
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -620,7 +581,7 @@ public class MainActivity extends FragmentActivity {
                 Log.w(LOG_TAG, "Main menu adapter sent an unknown position: " + menuTarget);
                 break;
         }
-        _drawerLayout.closeDrawer(_mainFrame);
+        _drawerLayout.closeDrawer(Gravity.LEFT);
     }
 
     public void onMainMenuClick(View v){
@@ -702,17 +663,7 @@ public class MainActivity extends FragmentActivity {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
 
             // Check screen height
-
-            int drawer_height = findViewById(R.id.left_drawer).getMeasuredHeight();
-            int listHeight = findViewById(R.id.main_menu_layout).getMeasuredHeight();
-
-            if ((_tabListAdapter != null && _tabListAdapter.getCount() > 0 && listHeight > (drawer_height / 2))|| listHeight >= drawer_height){
-                findViewById(R.id.main_menu_layout).setVisibility(View.GONE);
-                findViewById(R.id.main_menu_spinner).setVisibility(View.VISIBLE);
-            } else {
-                findViewById(R.id.main_menu_layout).setVisibility(View.VISIBLE);
-                findViewById(R.id.main_menu_spinner).setVisibility(View.GONE);
-            }
+            //TODO: This might be useless, try removing
             if (_pager.getVisibleArticle() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && _mainPreferences.getBoolean("kitkatReflow", true))
             {
                 WebView webView = _pager.getWebView(_pager.getVisibleArticle().getIndex());
@@ -776,11 +727,12 @@ public class MainActivity extends FragmentActivity {
     {
         if (_state) //Settings nightmode on
         {
-            View mainView = findViewById(R.id.main_layout);
+            View mainView = _main_layout;
             if (mainView != null)
             {
                 mainView.setBackgroundColor(getResources().getColor(android.R.color.black));
-                ((TextView)mainView.findViewById(R.id.gplusText)).setTextColor(getResources().getColor(android.R.color.white));
+                ((TextView)mainView.findViewById(R.id.WebsiteText)).setTextColor(getResources().getColor(android.R.color.white));
+                ((TextView)mainView.findViewById(R.id.GithubText)).setTextColor(getResources().getColor(android.R.color.white));
             }
             if (_pager != null)
             {
@@ -790,14 +742,21 @@ public class MainActivity extends FragmentActivity {
                     _pager.getWebView(i).loadUrl("javascript:nightMode()");
                 }
             }
+            if (_tabList != null) {
+                _tabList.setBackgroundColor(ContextCompat.getColor(this, R.color.at_dark));
+            }
+            LinearLayout mainMenu = (LinearLayout) findViewById(R.id.main_menu_layout);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                mainMenu.setElevation(0);
         }
         else //Settings nightmode off
         {
-           View mainView = findViewById(R.id.main_layout);
+            View mainView = _main_layout;
             if (mainView != null)
             {
                 mainView.setBackgroundColor(getResources().getColor(android.R.color.white));
-                ((TextView)mainView.findViewById(R.id.gplusText)).setTextColor(getResources().getColor(android.R.color.black));
+                ((TextView)mainView.findViewById(R.id.WebsiteText)).setTextColor(getResources().getColor(android.R.color.black));
+                ((TextView)mainView.findViewById(R.id.GithubText)).setTextColor(getResources().getColor(android.R.color.black));
             }
             if (_pager != null)
             {
@@ -807,9 +766,16 @@ public class MainActivity extends FragmentActivity {
                     _pager.getWebView(i).loadUrl("javascript:dayMode()");
                 }
             }
+            if (_tabList != null) {
+                _tabList.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_light));
+            }
+            LinearLayout mainMenu = (LinearLayout) findViewById(R.id.main_menu_layout);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                mainMenu.setElevation(4);
         }
+        _nightMode = _state;
+        setTheme(_nightMode ? R.style.AppDark : R.style.AppLight);
     }
-
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -818,12 +784,12 @@ public class MainActivity extends FragmentActivity {
         _drawerToggle.syncState();
         if (_tabState.getInt("tabCount",0) != 0)
         {
-            _mainFrame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            _main_layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 public void onGlobalLayout() {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                        _mainFrame.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        _main_layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                     } else {
-                        _mainFrame.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        _main_layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                     validateRotation();
                     restoreTabs();
@@ -838,12 +804,12 @@ public class MainActivity extends FragmentActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         _drawerToggle.onConfigurationChanged(newConfig);
-        _mainFrame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        _main_layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             public void onGlobalLayout() {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    _mainFrame.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    _main_layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 } else {
-                    _mainFrame.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    _main_layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
                 validateRotation();
             }
@@ -860,7 +826,8 @@ public class MainActivity extends FragmentActivity {
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView _searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView _searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         _searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         _searchView.setSubmitButtonEnabled(true);
         _searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -891,7 +858,8 @@ public class MainActivity extends FragmentActivity {
                 menu.findItem(R.id.action_favorite).setVisible(true);
                 menu.findItem(R.id.action_find).setVisible(true);
                 menu.findItem(R.id.action_share).setVisible(true);
-                _shareActionProvider = (ShareActionProvider) menu.findItem(R.id.action_share).getActionProvider();
+                MenuItem shareItem = menu.findItem(R.id.action_share);
+                ShareActionProvider _shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
                 _shareActionProvider.setShareIntent(getDefaultShareIntent());
             }
             else
@@ -914,7 +882,6 @@ public class MainActivity extends FragmentActivity {
         sendIntent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(htmlText).toString());
         sendIntent.putExtra(Intent.EXTRA_HTML_TEXT,htmlText);
         sendIntent.putExtra(Intent.EXTRA_TITLE, getString(R.string.shareTitle));
-        sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         return sendIntent;
     }
 
@@ -1006,15 +973,15 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed ()
     {
         //Detect if current view is an article view
-        if (_tabList.getCount() <= 0 || _pager.getCurrentItem() == -1)
+        if (_tabList.getCount() <= 1 || _pager.getCurrentItem() == -1) //The "position" refers to the position within the view, so it's always + 1 compared to the list
         {
             confirmExit();
             return;
         }
         //If the drawer is open, simple close it
-        if (_drawerLayout.isDrawerOpen(_mainFrame))
+        if (_drawerLayout.isDrawerOpen(Gravity.LEFT))
         {
-            _drawerLayout.closeDrawer(_mainFrame);
+            _drawerLayout.closeDrawer(Gravity.LEFT);
             return;
         }
         int _current = _pager.getCurrentItem();
@@ -1184,8 +1151,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void setTitle(CharSequence title) {
         _title = title.toString();
-        ActionBar _actionBar = getActionBar();
-        _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         _actionBar.setDisplayShowTitleEnabled(true);
         _actionBar.setTitle(_title);
     }
@@ -1196,13 +1161,13 @@ public class MainActivity extends FragmentActivity {
      */
     private void animatedNewTab(final String name, final String url, final boolean moveNow)
     {
-        _drawerLayout.openDrawer(_mainFrame);
+        _drawerLayout.openDrawer(Gravity.LEFT);
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 newTab(name, url, moveNow);
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
-                        _drawerLayout.closeDrawer(_mainFrame);
+                        _drawerLayout.closeDrawer(Gravity.LEFT);
                         _blockKey = false;
                     }
                 }, 200);
@@ -1229,7 +1194,7 @@ public class MainActivity extends FragmentActivity {
         //Now determine the new index of the article
         final int _newID = _tabListAdapter.getCount(); //The new index is equal to the old count because it starts at 0.
         Article _newArticle = new Article(name,url,_newID);
-        ArticleFragment _newFragment = new ArticleFragment(_newArticle, _newID);
+        ArticleFragment _newFragment = new ArticleFragment();
         _pager.setOffscreenPageLimit(_pager.getOffscreenPageLimit() + 1);
         _tabListAdapter.add(_newArticle);
         _tabListAdapter.notifyDataSetChanged();
@@ -1276,7 +1241,7 @@ public class MainActivity extends FragmentActivity {
                     }
                 }, animOut.getDuration());
             }
-            _tabList.setItemChecked(_position, true);
+            _tabList.setItemChecked(_position + 1, true); //The "position" refers to the position within the view, so it's always + 1 compared to the list
             validateRotation();
             _blockKey = false;
         }
@@ -1289,7 +1254,9 @@ public class MainActivity extends FragmentActivity {
             _blockKey = true;
             final Animation animOut = AnimationUtils.loadAnimation(this,R.anim.zoom_out);
             animOut.setAnimationListener(blockKeyListener);
-            FrameLayout tabToRemove = (FrameLayout) _pager.getChildAt(index).findViewById(R.id.frame_layout);
+            View pageViewToRemove = _pager.getChildAt(index);
+            FrameLayout tabToRemove = (FrameLayout) pageViewToRemove.findViewById(R.id.frame_layout);
+
             if (_pager.getCurrentItem() == index) //If the currently removed tab is displayed
             {
                 tabToRemove.setForeground(getResources().getDrawable(R.drawable.trash));
@@ -1322,6 +1289,10 @@ public class MainActivity extends FragmentActivity {
         {
             Log.e(LOG_TAG, ex.getMessage() + "");
             return;
+        }
+        catch (Exception ex)
+        {
+            Log.e(LOG_TAG, ex.getMessage() + "");
         }
     }
 
@@ -1381,10 +1352,7 @@ public class MainActivity extends FragmentActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
                 Log.d(LOG_TAG,"Article loaded with scale: " + _webView.getScale());
             }
-            if (_mainPreferences.getBoolean("nightMode",false))
-                _webView.setBackgroundColor(Color.BLACK);
-            else
-                _webView.setBackgroundColor(Color.WHITE);
+            _webView.setBackgroundColor(_nightMode ? Color.BLACK : Color.WHITE);
             _webView.loadDataWithBaseURL(null, _html, "text/html", "iso-8859-1", null);
             _webView.scrollTo(0,0);
             RelativeLayout _loadingScreen = _pager.getLoadingScreen(_id);
@@ -1410,21 +1378,26 @@ public class MainActivity extends FragmentActivity {
         try{
             Article _article = _pager.getVisibleArticle();
             if (_article == null)
-                if (_tabList.getChildCount() > 0 &&_tabList.getSelectedItem()!= null)
+                if (_tabList.getChildCount() > 1 &&_tabList.getSelectedItem()!= null) //The "position" refers to the position within the view, so it's always + 1 compared to the list
                     setTitle(((Article) _tabList.getSelectedItem()).getName());
-                else
+                else {
                     setTitle(R.string.app_name);
-            if (_article.getSubPages() != null && _article.getSubPages().size() > 0) //There are subpages, display dropdown navigation
+                    _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+                }
+            else if (_article.getSubPages() != null && _article.getSubPages().size() > 0) //There are subpages, display dropdown navigation
             {
-                ActionBar _actionBar = getActionBar();
+                ActionBar _actionBar = getSupportActionBar();
                 _actionBar.setDisplayShowTitleEnabled(false);
                 _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
                 ArrayList<Article> itemList = _article.getSubPages();
-                ArrayAdapter _adapter = new SubpageAdapter(getActionBar().getThemedContext(),R.layout.dropdown_item,android.R.id.text1,itemList);
+                ArrayAdapter _adapter = new SubpageAdapter(_actionBar.getThemedContext(),R.layout.dropdown_item,android.R.id.text1,itemList);
                 _actionBar.setListNavigationCallbacks(_adapter, new onNavigationListener());
             }
-            else
+            else    //There are no subpages
+            {
+                _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
                 setTitle(_article.getName());
+            }
         }
         catch (Exception e)
         {
@@ -1741,9 +1714,8 @@ public class MainActivity extends FragmentActivity {
             closeButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final ListView parentView = _tabList;
-                    final int index = parentView.getPositionForView(v); //Position of the INDEX position
+                    final int index = parentView.getPositionForView(v) - 1; //Position of the INDEX position
                     final int position = parentView.getPositionForView(v) - parentView.getFirstVisiblePosition(); //Position is the VISUAL position
-                    Article _article = (Article)parentView.getItemAtPosition(index); //Gets the article at the clicked position
                     Animation anim = AnimationUtils.loadAnimation(MainActivity.this, android.R.anim.slide_out_right);
                     anim.setDuration(500);
                     anim.setFillAfter(true);
@@ -1780,11 +1752,11 @@ public class MainActivity extends FragmentActivity {
 
     private class TabClickListener implements ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
+        public void onItemClick(AdapterView parent, View view, int position, long id) { //The "position" refers to the position within the view, so it's always +1 compared to the list
             try{
-                _pager.setCurrentItem(position);
+                _pager.setCurrentItem(position - 1); //Fixed position for header
                 _tabList.setItemChecked(position, true);
-                _drawerLayout.closeDrawer(_mainFrame);
+                _drawerLayout.closeDrawer(Gravity.LEFT);
                 invalidateTitle();
                 invalidateOptionsMenu();
             } catch (Exception exception)
@@ -1794,6 +1766,7 @@ public class MainActivity extends FragmentActivity {
             }
         }
     }
+
     private class SubpageAdapter extends ArrayAdapter
     {
         private int _width = 0;
@@ -1832,15 +1805,10 @@ public class MainActivity extends FragmentActivity {
     /**
      * Fragment that appears in the "content_frame"
      */
-    public static class ArticleFragment extends Fragment{
+    public static class ArticleFragment extends Fragment {
         public Stack<Article> History;
 
         public ArticleFragment(){
-            //Empty constructor for fuck's sake.
-        }
-
-        public ArticleFragment (Article article, int index)
-        {
             History = new Stack<Article>();
         }
 
@@ -2019,7 +1987,6 @@ public class MainActivity extends FragmentActivity {
                 }
                 if (_doc == null) //In case no document was received
                 {
-                    _pager.getLoadingScreen(_id).setVisibility(View.GONE);
                     throw new Exception("No document was received.");
                 }
                 if (isCancelled()) return null;
@@ -2049,7 +2016,7 @@ public class MainActivity extends FragmentActivity {
                 String backColor = "white";
                 String linkColor = "#0000FF";
                 String folderStyle = "text-align:center; border:1px; border-style:solid; background-color: #EEF; border-color: #BBBBC3; border-radius:8px; padding:6px;";
-                if (_mainPreferences.getBoolean("nightMode",false))
+                if (_nightMode)
                 {   //Nightmode on
                     mainColor = "white";
                     backColor = "black";
@@ -2287,9 +2254,7 @@ public class MainActivity extends FragmentActivity {
                                     "}\n";
                 }
                 head+="</style>" + jsFunction + "</head>";
-                String mode = "dayMode()";
-                if (_mainPreferences.getBoolean("nightMode",false))
-                    mode="nightMode()";
+                String mode = _nightMode ? "nightMode()" : "dayMode()";
                 String finalHTML = "<html>" + head + "<body onload=\"" + mode + "\"><div id=\"contentRoot\">" + wikiText.html() + "</div></body></html>";
                 if (isCancelled()) return null;
                 //Return final result
@@ -2455,7 +2420,9 @@ public class MainActivity extends FragmentActivity {
             webView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("reflow()", null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        webView.evaluateJavascript("reflow()", null);
+                    }
                     webView.setScrollX(0);
                     scaleChangedRunnablePending = false;
                 }

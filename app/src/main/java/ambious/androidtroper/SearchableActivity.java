@@ -9,12 +9,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.SearchRecentSuggestions;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.SearchView;
 
 import static java.util.regex.Pattern.matches;
 
@@ -22,13 +26,14 @@ import static java.util.regex.Pattern.matches;
  * Created by Elad on 25/09/13.
  */
 
-public class SearchableActivity extends Activity {
+public class SearchableActivity extends AppCompatActivity {
 
     private final String LOG_TAG = "AndroidTroper: Search";
     private Intent _intent;
     private WebView _webView;
     private SharedPreferences _mainPreferences;
     private WebViewClient _webViewClient;
+    ActionBar _actionBar;
     private String _urlString = "http://tvtropes.org/pmwiki/search_result.php?q=";
 
     public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +50,10 @@ public class SearchableActivity extends Activity {
         _intent = getIntent();
 
         String _query = _intent.getStringExtra("query");
-        getActionBar().setHomeButtonEnabled(true); //Enables Sets the home button
-        getActionBar().setDisplayHomeAsUpEnabled(true); //Makes the home button go back
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(myToolbar);
+        _actionBar = getSupportActionBar();
+        _actionBar.setDisplayHomeAsUpEnabled(true);
         doSearch(_query);
     }
 
@@ -60,7 +67,8 @@ public class SearchableActivity extends Activity {
         getMenuInflater().inflate(R.menu.search_options, menu);
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView _searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final android.support.v7.widget.SearchView _searchView = (android.support.v7.widget.SearchView) MenuItemCompat.getActionView(searchItem);
         _searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         _searchView.setSubmitButtonEnabled(true);
         //Set the search window to be opened with the queried search already.

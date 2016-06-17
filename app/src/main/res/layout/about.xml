@@ -2,14 +2,18 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="fill_parent"
-    android:layout_width="fill_parent">
+    android:layout_width="fill_parent"
+    android:background="?android:attr/windowBackground">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/action_bar"/>
+
     <ScrollView
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:id="@+id/about_layout"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/gplus_clickable">
+        android:layout_below="@id/app_bar">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -107,43 +111,4 @@
                 android:layout_marginRight="5dp"/>
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/gplus_clickable"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false"
-        android:layout_gravity="center_horizontal|bottom"
-        android:clickable="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/clickable">
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#bfbfbf"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/gplus"
-            android:layout_gravity="center"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Gplus"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:singleLine="false"
-            android:longClickable="false"
-            android:gravity="center"/>
-    </LinearLayout>
 </RelativeLayout>

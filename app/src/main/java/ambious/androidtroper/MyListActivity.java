@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.*;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +21,7 @@ import java.util.List;
 /**
  * Created by Elad on 02/10/13.
  */
-public class MyListActivity extends android.app.ListActivity {
+public class MyListActivity extends AppCompatActivity {
     //INSTANCE CONSTANTS//
     private final String LOG_TAG = "AndroidTroper: List";
     private final int TYPE_RECENT = 0;
@@ -38,13 +41,13 @@ public class MyListActivity extends android.app.ListActivity {
     private ListView _listView;
     private List<MyListItem> _listItems;
     ItemsAdapter _adapter;
+    ActionBar _actionBar;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _intent = getIntent();
         _intentFlag = _intent.getFlags();
-        getActionBar().setHomeButtonEnabled(true); //Enables Sets the home button
-        getActionBar().setDisplayHomeAsUpEnabled(true); //Makes the home button go back
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         if (_intentFlag == TYPE_FAVORITES)
         {
@@ -72,11 +75,14 @@ public class MyListActivity extends android.app.ListActivity {
         _favoriteSettings = getSharedPreferences("favoriteSettings",0);
         _mainPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _readLaterSettings = getSharedPreferences("readlaterSettings",0);
-        if (_mainPreferences.getBoolean("nightMode", false))
-            setTheme(R.style.SecondaryTheme_Dark);
-        else
-            setTheme(R.style.SecondaryTheme);
+        setTheme(_mainPreferences.getBoolean("nightMode", false) ? R.style.AppDark : R.style.AppLight);
         setContentView(R.layout.listview);
+
+        //Setup Actiobar//
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(myToolbar);
+        _actionBar = getSupportActionBar();
+        _actionBar.setDisplayHomeAsUpEnabled(true);
 
         //Set the list
         _listItems = getList(_intentFlag);
@@ -103,7 +109,7 @@ public class MyListActivity extends android.app.ListActivity {
             finish();
             return;
         }
-        _listView = getListView();
+        _listView = (ListView) findViewById(R.id.myListView);
         if (_listView == null)
         {
             Log.e(LOG_TAG,"ListView returned null!");
@@ -386,10 +392,6 @@ public class MyListActivity extends android.app.ListActivity {
             }
             wrapper.populateFrom(_listItems.get(position));
             ImageButton removeButton = (ImageButton) row.findViewById(R.id.listRemove);
-            if (_mainPreferences.getBoolean("nightMode",false))
-                removeButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_close));
-            else
-                removeButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_light));
             if (_intentFlag == TYPE_FAVORITES || _intentFlag == TYPE_READLATER)
             {
                 final MyListItem selectedResult = _listItems.get(position);
@@ -398,11 +400,11 @@ public class MyListActivity extends android.app.ListActivity {
                     @Override
                     public void onClick(View v) {
                         final int index = selectedResult.getIndex();
-                        final int position = getListView().getPositionForView(v) - getListView().getFirstVisiblePosition();
+                        final int position = _listView.getPositionForView(v) - _listView.getFirstVisiblePosition();
                         Animation anim = AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_out_right);
                         anim.setDuration(500);
                         anim.setFillAfter(true);
-                        getListView().getChildAt(position).startAnimation(anim);
+                        _listView.getChildAt(position).startAnimation(anim);
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
                                 if (_intentFlag == TYPE_FAVORITES)
