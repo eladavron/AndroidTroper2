@@ -1,8 +1,14 @@
 Android Troper 2.8
 ===============
 
-2.8
-=====
+2.8 Build 2801
+==============
+[*] All fragments are now static - as recommended by google
+[*] Fixed theming issues with Preference screen
+[*] Fixed theming issues with actionbar popup
+
+2.8 Build 2800
+==============
 [*] A bit of a visual makeover to the app's theme.
 [*} Google+ page will be soon retired.
 [*] Updated JSoup to version 1.9.2 and retired local library in favor of a Gradle-based one.

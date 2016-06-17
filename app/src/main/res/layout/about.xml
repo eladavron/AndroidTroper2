@@ -2,18 +2,12 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="fill_parent"
-    android:layout_width="fill_parent"
-    android:background="?android:attr/windowBackground">
-
-    <include
-        android:id="@+id/app_bar"
-        layout="@layout/action_bar"/>
+    android:layout_width="fill_parent">
 
     <ScrollView
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-        android:id="@+id/about_layout"
-        android:layout_below="@id/app_bar">
+        android:id="@+id/about_layout">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

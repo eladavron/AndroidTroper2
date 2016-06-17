@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:minHeight="?attr/actionBarSize"
     android:background="@color/at_dark"
+    app:theme="?attr/actionBarStyle"
+    app:popupTheme="?attr/actionBarPopupTheme"
     app:titleTextColor="@android:color/white"
     android:elevation="4dp"
     android:logo="@drawable/ic_launcher"

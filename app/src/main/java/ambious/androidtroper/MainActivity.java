@@ -1,6 +1,5 @@
 package ambious.androidtroper;
 
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +9,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,6 +26,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.ShareActionProvider;
@@ -154,7 +153,10 @@ public class MainActivity extends AppCompatActivity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
 
         Log.d(LOG_TAG,"Setting up main interface...");
+
         //Load the main view!!//
+        _nightMode = _mainPreferences.getBoolean("nightMode",false);
+        setTheme(_nightMode ? R.style.AppDark : R.style.AppLight);
         setContentView(R.layout.activity_main);
 
         //Set interface variables//
@@ -212,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
         _tabList.setAdapter(_tabListAdapter); //Set the adapter for the tab list view
         _tabList.setOnItemClickListener(new TabClickListener()); // Set the tab list's click listener
 
-
         Log.d(LOG_TAG,"Initializing tab elements...");
         //Init tab elements//
         _pager = (MyViewPager) findViewById(R.id.pager);
@@ -228,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int i) {
-                _tabList.setItemChecked(i + 1, true); //The "position" refers to the position within the view, so it's always + 1 compared to the list
+                _tabList.setItemChecked(i + 1, true); //List items are +1 compared to page indices
                 invalidateTitle();
                 invalidateOptionsMenu();
             }
@@ -246,12 +247,10 @@ public class MainActivity extends AppCompatActivity {
                 _isLoaded = true;
             }
         });
-        setNightMode(_mainPreferences.getBoolean("nightMode",false));
+        setNightMode(_nightMode);
         handleIntent(getIntent());
         Log.d(LOG_TAG,"Theme is: " + this.getTheme().toString());
     }
-
-
 
     private void restoreTabs()
     {
@@ -276,10 +275,9 @@ public class MainActivity extends AppCompatActivity {
                     newTab(_name,_url,false);
                 }
             }
-            int _current = _tabState.getInt("selectedTab",0); //The "position" refers to the position within the view, so it's always + 1 compared to the list
-            _tabList.setItemChecked(_current + 1,true); //Corrected for tablist offset
-            _tabList.setSelection(_current + 1); //Corrected for tablist offset
-            _pager.setCurrentItem(_current);
+            int _current = _tabState.getInt("selectedTab",0);
+            _tabList.setItemChecked(_current,true);
+            _pager.setCurrentItem(_current - 1); //Pager indices are -1 compared to list.
             _tabState.edit().clear().commit();
         }
         Log.d(LOG_TAG,"Tabs restored!");
@@ -295,7 +293,6 @@ public class MainActivity extends AppCompatActivity {
         if (_tabCount <= 0)
         {
             Log.i(LOG_TAG,"Restored empty session!");
-            return;
         } else {
             for (int i=0;i<_tabCount;i++)
             {
@@ -310,23 +307,15 @@ public class MainActivity extends AppCompatActivity {
                     newTab(_name,_url,false);
                 }
             }
-            int _current = tabSession.getInt("selectedTab",0); //The "position" refers to the position within the view, so it's always + 1 compared to the list
-            _tabList.setItemChecked(_current + 1,true); //Corrected for tablist offset
-            _tabList.setSelection(_current + 1); //Corrected for tablist offset
-            _pager.setCurrentItem(_current);
+            int _current = tabSession.getInt("selectedTab",0);
+            _tabList.setItemChecked(_current,true);
+            _pager.setCurrentItem(_current - 1);
         }
     }
 
     @Override
     public void onNewIntent(Intent intent){
         handleIntent(intent);
-    }
-
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-        Log.d(LOG_TAG, "Activity stopped.");
     }
 
     @Override
@@ -345,7 +334,8 @@ public class MainActivity extends AppCompatActivity {
 //            state.putString("tabHtml" + i, _html);
         }
         state.putInt("tabCount",_tabCount);
-        state.putInt("selectedTab", _tabList.getSelectedItemPosition() - 1); //The "position" refers to the position within the view, so it's always + 1 compared to the list
+        int position = _tabList.getCheckedItemPosition();
+        state.putInt("selectedTab", position); //The "position" refers to the position within the view, so it's always + 1 compared to the list
         Log.d(LOG_TAG,"Tabs saved.");
     }
 
@@ -363,8 +353,8 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("tabUrl" + i,url);
         }
         editor.putInt("tabCount",_tabCount);
-        editor.putInt("selectedTab",_tabList.getSelectedItemPosition());
-        editor.commit();
+        editor.putInt("selectedTab",_tabList.getCheckedItemPosition());
+        editor.apply();
         Log.d(LOG_TAG,"Tabs saved.");
     }
 
@@ -382,7 +372,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onRestoreInstanceState(state);
         _main_layout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
             public void onGlobalLayout() {
                 if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                     _main_layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
@@ -462,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                 saveOpenTabs();
             finish();
         } else {
-            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this,_nightMode ? R.style.AlertDialog_Dark : R.style.AlertDialog_Light);
             alertDialog.setTitle(R.string.exitConfirm);
             alertDialog.setIcon(R.drawable.ic_launcher);
             alertDialog.setMessage(R.string.exitConfirmText);
@@ -478,6 +467,17 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
             });
+            boolean _isChecked[] = {false};
+            _isChecked[0] = _mainPreferences.getBoolean("confirmExit",true);
+            alertDialog.setMultiChoiceItems(R.string.neverAsk, _isChecked, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    SharedPreferences.Editor _mainEditor = _mainPreferences.edit();
+                    _mainEditor.putBoolean("confirmExit", isChecked);
+                    _mainEditor.apply();
+                }
+            });
+
             CheckBox checkBox = new CheckBox(getApplicationContext());
             checkBox.setText(R.string.neverAsk);
             checkBox.setOnClickListener(new View.OnClickListener() {
@@ -488,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         SharedPreferences.Editor _mainEditor = _mainPreferences.edit();
                         _mainEditor.putBoolean("confirmExit", !checkBox.isChecked());
-                        _mainEditor.commit();
+                        _mainEditor.apply();
                     }
                 }
             });
@@ -687,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-
+                    _blockKey = false;
                 }
 
                 @Override
@@ -703,6 +703,7 @@ public class MainActivity extends AppCompatActivity {
                         //TODO: refresh open articles
                     } else if (key.equals("nightMode")){
                         setNightMode(_mainPreferences.getBoolean("nightMode", false));
+                        recreate();
                     } else if (key.equals("allowZoom")){
                         for (int i=0;i<_pageAdapter.getCount();i++)
                         {
@@ -725,9 +726,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setNightMode(boolean _state)
     {
+        View mainView = _main_layout;
         if (_state) //Settings nightmode on
         {
-            View mainView = _main_layout;
             if (mainView != null)
             {
                 mainView.setBackgroundColor(getResources().getColor(android.R.color.black));
@@ -746,12 +747,11 @@ public class MainActivity extends AppCompatActivity {
                 _tabList.setBackgroundColor(ContextCompat.getColor(this, R.color.at_dark));
             }
             LinearLayout mainMenu = (LinearLayout) findViewById(R.id.main_menu_layout);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mainMenu != null)
                 mainMenu.setElevation(0);
         }
         else //Settings nightmode off
         {
-            View mainView = _main_layout;
             if (mainView != null)
             {
                 mainView.setBackgroundColor(getResources().getColor(android.R.color.white));
@@ -770,7 +770,7 @@ public class MainActivity extends AppCompatActivity {
                 _tabList.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_light));
             }
             LinearLayout mainMenu = (LinearLayout) findViewById(R.id.main_menu_layout);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mainMenu != null)
                 mainMenu.setElevation(4);
         }
         _nightMode = _state;
@@ -1184,23 +1184,21 @@ public class MainActivity extends AppCompatActivity {
         _blockKey = true;
 
         //First draw divider if needed
-        int _position = _tabListAdapter.getCount(); //Gets the physical position in the list to add the tab to
-        if (_position == 0){
+        final int newIndex = _tabListAdapter.getCount(); //The new index is equal to the old count;
+        if (newIndex == 0){
             View divider = findViewById(R.id.list_divider);
             if (divider != null)
                 divider.setVisibility(View.VISIBLE);
         }
 
-        //Now determine the new index of the article
-        final int _newID = _tabListAdapter.getCount(); //The new index is equal to the old count because it starts at 0.
-        Article _newArticle = new Article(name,url,_newID);
+        Article _newArticle = new Article(name,url,newIndex);
         ArticleFragment _newFragment = new ArticleFragment();
         _pager.setOffscreenPageLimit(_pager.getOffscreenPageLimit() + 1);
         _tabListAdapter.add(_newArticle);
         _tabListAdapter.notifyDataSetChanged();
         _fragmentAdapter.add(_newFragment);
         _pageAdapter.notifyDataSetChanged();
-        getArticle(name, url, _fragmentAdapter.indexOf(_newFragment)); //_fragmentAdapter.indexOf(_newFragment) should technically be equal to _newID
+        getArticle(name, url, _fragmentAdapter.indexOf(_newFragment)); //_fragmentAdapter.indexOf(_newFragment) should technically be equal to newIndex
         if (moveNow){
             if (_pager.getChildCount() == 1)
             {
@@ -1209,7 +1207,7 @@ public class MainActivity extends AppCompatActivity {
                 _newFragment.getView().startAnimation(fadeIn);
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
-                        _pager.setCurrentItem(_newID);
+                        _pager.setCurrentItem(newIndex);
                         _blockKey = false;
                     }
                 }, fadeIn.getDuration());
@@ -1217,7 +1215,7 @@ public class MainActivity extends AppCompatActivity {
             else
             {
                 final FrameLayout _oldTab =(FrameLayout) _pager.getChildAt(_pager.getCurrentItem()).findViewById(R.id.frame_layout);
-                final FrameLayout _newTab =(FrameLayout) _pager.getChildAt(_newID).findViewById(R.id.frame_layout);
+                final FrameLayout _newTab =(FrameLayout) _pager.getChildAt(newIndex).findViewById(R.id.frame_layout);
                 final Animation animOut = AnimationUtils.loadAnimation(this,R.anim.slide_out_left);
                 final Animation animIn = AnimationUtils.loadAnimation(this,R.anim.zoom_in);
 
@@ -1230,7 +1228,7 @@ public class MainActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        _pager.setCurrentItem(_newID,false);
+                        _pager.setCurrentItem(newIndex,false);
                         _newTab.startAnimation(animIn);
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -1241,10 +1239,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }, animOut.getDuration());
             }
-            _tabList.setItemChecked(_position + 1, true); //The "position" refers to the position within the view, so it's always + 1 compared to the list
+            _tabList.setItemChecked(newIndex + 1, true); //New position is index + 1
             validateRotation();
-            _blockKey = false;
         }
+        _blockKey = false;
     }
 
     private void removeTab(final int index)
@@ -1378,9 +1376,12 @@ public class MainActivity extends AppCompatActivity {
         try{
             Article _article = _pager.getVisibleArticle();
             if (_article == null)
-                if (_tabList.getChildCount() > 1 &&_tabList.getSelectedItem()!= null) //The "position" refers to the position within the view, so it's always + 1 compared to the list
-                    setTitle(((Article) _tabList.getSelectedItem()).getName());
-                else {
+                if (_tabList.getChildCount() > 1 && _tabList.getCheckedItemPosition() != -1) {
+                    int position = _tabList.getCheckedItemPosition();
+                    String name = _tabListAdapter.getItem(position - 1).getName();
+                    setTitle(name);
+                }
+                else{
                     setTitle(R.string.app_name);
                     _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
                 }
@@ -1754,7 +1755,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) { //The "position" refers to the position within the view, so it's always +1 compared to the list
             try{
-                _pager.setCurrentItem(position - 1); //Fixed position for header
+                _pager.setCurrentItem(position - 1); //Pager indices are -1 compared to positions
                 _tabList.setItemChecked(position, true);
                 _drawerLayout.closeDrawer(Gravity.LEFT);
                 invalidateTitle();
@@ -2001,7 +2002,7 @@ public class MainActivity extends AppCompatActivity {
                         _taskTitle = _doc.title();
                 } else {
                     Element _titleElement = _doc.getElementsByClass("article_title").first();
-                   _taskTitle = _titleElement.text();
+                    _taskTitle = _titleElement.text();
                 }
                 _name = _taskTitle; //Set the title to the fragment's internal variable
                 if (isCancelled()) return null;
@@ -2040,7 +2041,7 @@ public class MainActivity extends AppCompatActivity {
                             {
                                 String articleUrl;
                                 if (articleLink != null && !articleLink.isEmpty())
-                                 {
+                                {
                                     articleUrl = articleLink.attr("href");
                                     Log.d(LOG_TAG, "Subpage Added!\nArticle: " + articleName + ".\nURL: " + articleUrl);
                                     _subPages.add(new Article(articleName, articleUrl, -1));

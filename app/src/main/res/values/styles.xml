@@ -3,22 +3,55 @@
         <item name="colorPrimaryDark">@color/at_dark</item>
         <item name="colorAccent">@color/at_light</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="colorControlNormal">@android:color/white</item>
-        <item name="preferenceTheme">@style/Preference.Overlay</item>
+        <item name="preferenceTheme">@style/Preference.Overlay_Light</item>
+        <item name="actionBarStyle">@style/Actionbar_Light</item>
+        <item name="android:textColor">@android:color/black</item>
         <item name="android:listSelector">@drawable/tab_selector_background</item>
     </style>
 
-
     <style name="AppDark" parent="Theme.AppCompat.NoActionBar">
+        <item name="preferenceTheme">@style/Preference.Overlay_Dark</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@color/at_dark</item>
         <item name="colorPrimaryDark">@color/at_dark</item>
         <item name="colorPrimary">@android:color/white</item>
         <item name="colorAccent">@color/at_light</item>
+        <item name="actionBarStyle">@style/Actionbar_Dark</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:listSelector">@drawable/tab_selector_background</item>
     </style>
 
-    <style name="Preference.Overlay" parent="@style/PreferenceThemeOverlay.v14.Material">
+    <style name="Actionbar_Light" parent="AppLight">
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="actionBarPopupTheme">@style/Actionbar_Popup_Light</item>
+    </style>
+
+    <style name="Actionbar_Popup_Light" parent="Actionbar_Light">
+        <item name="colorControlNormal">@color/at_light</item>
+    </style>
+
+    <style name="Actionbar_Dark" parent="AppDark">
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="actionBarPopupTheme">@style/Actionbar_Popup_Dark</item>
+    </style>
+
+    <style name="Actionbar_Popup_Dark" parent="Actionbar_Dark">
+        <item name="colorControlNormal">@color/at_light</item>
+    </style>
+
+    <style name="AlertDialog_Light" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/at_light</item>
+        <item name="colorControlNormal">@color/at_light</item>
+    </style>
+
+    <style name="AlertDialog_Dark" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/at_light</item>
+    </style>
+
+    <style name="Preference.Overlay_Light" parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="colorControlActivated">@color/at_light</item>
+    </style>
+
+    <style name="Preference.Overlay_Dark" parent="@style/PreferenceThemeOverlay.v14.Material">
         <item name="colorControlActivated">@color/at_light</item>
     </style>
 

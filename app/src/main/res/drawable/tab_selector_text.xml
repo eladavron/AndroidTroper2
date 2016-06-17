@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_selected="true"
-        android:drawable="@color/at_light" />
+        android:color="@android:color/white" />
     <item android:state_checked="true"
-        android:drawable="@color/at_light" />
+        android:color="@android:color/white" />
     <item android:state_activated="true"
-        android:drawable="@color/at_light"/>
+        android:color="@android:color/white" />
+    <item android:color="?android:attr/textColor"/>
 </selector>
