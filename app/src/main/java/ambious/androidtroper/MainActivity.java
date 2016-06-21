@@ -143,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
         _favoriteSettings = getSharedPreferences("favoriteSettings",0);
         _readLaterSettings = getSharedPreferences("readlaterSettings",0);
         _tabState = getSharedPreferences("tabState",0);
-        checkFirstRun();
-
 
         //Set Rotation//
         if (_mainPreferences.getBoolean("lockRotation",false))
@@ -158,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
         _nightMode = _mainPreferences.getBoolean("nightMode",false);
         setTheme(_nightMode ? R.style.AppDark : R.style.AppLight);
         setContentView(R.layout.activity_main);
+
+        checkFirstRun();
 
         //Set interface variables//
         _main_layout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this,_nightMode ? R.style.AlertDialog_Dark : R.style.AlertDialog_Light);
             alertDialog.setTitle(R.string.exitConfirm);
-            alertDialog.setIcon(R.drawable.ic_launcher);
+            alertDialog.setIcon(R.mipmap.ic_launcher);
             alertDialog.setMessage(R.string.exitConfirmText);
             alertDialog.setPositiveButton(R.string.exitYes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
@@ -623,7 +623,7 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(R.string.updateSummary)
                         .setTitle(R.string.updateTitle)
-                        .setIcon(getResources().getDrawable(R.drawable.ic_launcher))
+                        .setIcon(getResources().getDrawable(R.mipmap.ic_launcher))
                         .setPositiveButton(android.R.string.ok,new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

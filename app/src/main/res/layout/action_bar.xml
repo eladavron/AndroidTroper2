@@ -9,5 +9,4 @@
     app:popupTheme="?attr/actionBarPopupTheme"
     app:titleTextColor="@android:color/white"
     android:elevation="4dp"
-    android:logo="@drawable/ic_launcher"
     android:id="@+id/app_bar" />

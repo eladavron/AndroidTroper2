@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="at_dark">#2b4f74</color>
+    <color name="at_dark">#314563</color>
+
     <color name="at_light">#487cb2</color>
 </resources>

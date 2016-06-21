@@ -1,8 +1,13 @@
-Android Troper 2.8
+Troper 2.8
 ===============
+
+2.8 Build 2802
+==============
+[*] Rebranded app logos
 
 2.8 Build 2801
 ==============
+[*] Renamed app to "Troper" to comply with Google's new app guidelines.
 [*] All fragments are now static - as recommended by google
 [*] Fixed theming issues with Preference screen
 [*] Fixed theming issues with actionbar popup
