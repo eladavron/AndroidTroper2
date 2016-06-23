@@ -1367,7 +1367,7 @@ public class MainActivity extends AppCompatActivity {
         try{
             Article _article = _pager.getVisibleArticle();
             if (_article == null)
-                if (_tabList.getChildCount() > 1 && _tabList.getCheckedItemPosition() != -1) {
+                if (_tabList.getChildCount() > 2 && _tabList.getCheckedItemPosition() != -1) {  //There are pages
                     int position = _tabList.getCheckedItemPosition();
                     String name = _tabListAdapter.getItem(position - 1).getName();
                     setTitle(name);
@@ -1394,6 +1394,7 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e)
         {
             Log.e(LOG_TAG, "Error setting title - reverting to app name!");
+            _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             Log.e(LOG_TAG, e.getMessage() + "");
             setTitle(R.string.app_name);
         }
