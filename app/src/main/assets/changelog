@@ -1,25 +1,17 @@
 Troper 2.8
-===============
+==========
 
-2.8 Build 2802
-==============
-[*] Rebranded app logos
-
-2.8 Build 2801
-==============
-[*] Renamed app to "Troper" to comply with Google's new app guidelines.
-[*] All fragments are now static - as recommended by google
-[*] Fixed theming issues with Preference screen
-[*] Fixed theming issues with actionbar popup
-
-2.8 Build 2800
-==============
+2.8
+===
 [*] A bit of a visual makeover to the app's theme.
 [*} Google+ page will be soon retired.
 [*] Updated JSoup to version 1.9.2 and retired local library in favor of a Gradle-based one.
 [*] Replaced all references to the Google+ page with links to the new website
 [*] Added a clickable reference to the website and to the GitHub repo to the main page.
-[*] Updated the Android Compatibility library from v4 to v14
+[*] Updated the Android Compatibility library from v4 to v14:24.0.0
+[*] Renamed app to "Troper" to comply with Google's new app guidelines.
+[*] All fragments are now static - as recommended by google
+
 
 2.7
 ===

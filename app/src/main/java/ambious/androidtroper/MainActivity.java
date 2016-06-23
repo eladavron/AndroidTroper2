@@ -28,6 +28,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        LinearLayout _websiteClick = (LinearLayout) findViewById(R.id.WebsiteClickable);
+        TextView  _websiteClick = (TextView ) findViewById(R.id.WebsiteText);
         _websiteClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        LinearLayout _githubClick = (LinearLayout) findViewById(R.id.GithubClickable);
+        TextView _githubClick = (TextView) findViewById(R.id.GithubText);
         _githubClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -467,18 +468,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
             });
-            boolean _isChecked[] = {false};
-            _isChecked[0] = _mainPreferences.getBoolean("confirmExit",true);
-            alertDialog.setMultiChoiceItems(R.string.neverAsk, _isChecked, new DialogInterface.OnMultiChoiceClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                    SharedPreferences.Editor _mainEditor = _mainPreferences.edit();
-                    _mainEditor.putBoolean("confirmExit", isChecked);
-                    _mainEditor.apply();
-                }
-            });
 
-            CheckBox checkBox = new CheckBox(getApplicationContext());
+            AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
             checkBox.setText(R.string.neverAsk);
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override

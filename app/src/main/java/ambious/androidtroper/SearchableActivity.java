@@ -40,6 +40,7 @@ public class SearchableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         _mainPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setTheme(_mainPreferences.getBoolean("nightMode",false) ? R.style.AppDark : R.style.AppLight);
         setContentView(R.layout.search);
         _webView = (WebView)findViewById(R.id.searchWeb);
         _webView.setWebViewClient(new InternalWebViewClient());

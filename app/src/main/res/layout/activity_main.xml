@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     android:id="@+id/activity_main"
     tools:context=".MainActivity">
@@ -31,7 +32,8 @@
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/app_name"
-                    android:src="@drawable/logo" />
+                    android:src="@drawable/logo"
+                    android:padding="4dp" />
 
                 <!-- Links -->
                 <LinearLayout
@@ -40,65 +42,29 @@
                     android:orientation="vertical"
                     android:layout_gravity="bottom">
 
-                    <!-- Website link -->
-                    <LinearLayout
-                        android:id="@+id/WebsiteClickable"
+                    <TextView
+                        android:id="@+id/WebsiteText"
+                        style="@style/Base.Widget.AppCompat.Button.Colored"
+                        android:background="?android:attr/windowBackground"
+                        android:textAllCaps="false"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_gravity="center_horizontal|bottom"
-                        android:clickable="true">
+                        android:minHeight="48dip"
+                        android:text="@string/WebsiteClick"
+                        android:singleLine="false"
+                        android:gravity="center" />
 
-                        <View
-                            android:layout_width="fill_parent"
-                            android:layout_height="1dp"
-                            android:background="#bfbfbf"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginBottom="3dp"/>
-
-                        <TextView
-                            android:id="@+id/WebsiteText"
-                            android:layout_width="fill_parent"
-                            android:layout_height="0dp"
-                            android:text="@string/WebsiteClick"
-                            android:singleLine="false"
-                            android:longClickable="false"
-                            android:drawablePadding="10dp"
-                            android:layout_marginRight="3dp"
-                            android:layout_marginBottom="3dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_weight="1"
-                            android:gravity="center"/>
-                    </LinearLayout>
-
-                    <!-- Github link -->
-                    <LinearLayout
-                        android:id="@+id/GithubClickable"
+                    <TextView
+                        android:id="@+id/GithubText"
+                        style="@style/Base.Widget.AppCompat.Button.Colored"
+                        android:background="?android:attr/windowBackground"
+                        android:textAllCaps="false"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_gravity="center_horizontal|bottom"
-                        android:clickable="true">
-                        <View
-                            android:layout_width="fill_parent"
-                            android:layout_height="1dp"
-                            android:background="#bfbfbf"
-                            android:layout_marginTop="3dp"
-                            android:layout_marginBottom="3dp"/>
-                        <TextView
-                            android:id="@+id/GithubText"
-                            android:layout_width="fill_parent"
-                            android:layout_height="0dp"
-                            android:text="@string/GitHubClick"
-                            android:singleLine="false"
-                            android:longClickable="false"
-                            android:drawablePadding="10dp"
-                            android:layout_marginRight="3dp"
-                            android:layout_marginBottom="3dp"
-                            android:layout_marginLeft="5dp"
-                            android:layout_weight="1"
-                            android:gravity="center"/>
-                    </LinearLayout>
+                        android:minHeight="48dip"
+                        android:text="@string/GitHubClick"
+                        android:singleLine="false"
+                        android:gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>

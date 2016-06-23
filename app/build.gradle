@@ -1,14 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-    }
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
     defaultConfig {
         applicationId "ambious.androidtroper"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 24
     }
     lintOptions {
         checkReleaseBuilds false
@@ -18,12 +16,18 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
-        debug {
-        }
+    }
+    dexOptions {
+        incremental true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
-    compile 'com.android.support:preference-v14:23.4.0'
+    compile 'com.android.support:preference-v14:24.0.0'
+    compile 'com.android.support:design:24.0.0'
     compile 'org.jsoup:jsoup:1.9.2'
 }
