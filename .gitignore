@@ -214,8 +214,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-.gradle/2.10/taskArtifacts/cache.properties
+
 
 #Android Studio
-.idea
-.gradle
+.idea/
+.gradle/
+sources/Old/

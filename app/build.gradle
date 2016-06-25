@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
     defaultConfig {
         applicationId "ambious.androidtroper"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 23
     }
     lintOptions {
         checkReleaseBuilds false
@@ -27,7 +27,6 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:preference-v14:24.0.0'
-    compile 'com.android.support:design:24.0.0'
+    compile 'com.android.support:preference-v14:23.+'
     compile 'org.jsoup:jsoup:1.9.2'
 }
