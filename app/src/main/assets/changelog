@@ -1,5 +1,10 @@
 Troper 2.8
-==========
+========
+
+2.8.1
+====
+[*] HOPEFULLY Fixed a performance issue that was affecting some people
+[*] Added full automatic Google-side backup for app data (for Android 6.0+ only!)
 
 2.8
 ===

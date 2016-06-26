@@ -19,9 +19,17 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/logo"
                 android:layout_marginLeft="0dp"
                 android:layout_marginTop="0dp"
+                android:padding="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/byLine"
+                android:text="@string/byline"
+                android:layout_gravity="end"
                 android:padding="4dp"/>
 
             <TextView
@@ -36,8 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/byLine"
-                android:text="@string/byline"
+                android:id="@+id/build"
+                android:text="@string/build"
                 android:layout_gravity="center"/>
 
             <ImageButton

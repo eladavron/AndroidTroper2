@@ -32,7 +32,6 @@
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/app_name"
-                    android:src="@drawable/logo"
                     android:padding="4dp" />
 
                 <!-- Links -->
