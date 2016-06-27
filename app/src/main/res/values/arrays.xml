@@ -10,12 +10,4 @@
         <item>Oldest First</item>
         <item>Newest First</item>
     </string-array>
-    <string-array name="main_menu">
-        <item>Main Menu</item>
-        <item>Random</item>
-        <item>Recently Read</item>
-        <item>Favorites</item>
-        <item>Read-Later</item>
-        <item>Settings</item>
-    </string-array>
 </resources>

@@ -7,8 +7,15 @@
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
-    <item android:id="@+id/action_shuffle"
+    <item android:id="@+id/action_view_options"
         android:orderInCategory="10"
+        app:showAsAction="ifRoom"
+        android:title="@string/defaultFont"
+        android:icon="@drawable/ic_text_fields_white_36dp"
+        android:visible="false"/>
+
+    <item android:id="@+id/action_shuffle"
+        android:orderInCategory="11"
         app:showAsAction="ifRoom"
         android:title="@string/random"
         android:icon="@drawable/ic_action_random"
@@ -19,7 +26,7 @@
         android:orderInCategory="15"
         app:showAsAction="ifRoom"
         android:title="@string/findInPage"
-        android:icon="@drawable/ic_menu_find_holo_dark"
+        android:icon="@drawable/ic_find_in_page_white_36dp"
         android:visible="false"/>
 
     <item android:id="@+id/action_share"
@@ -46,10 +53,7 @@
         app:showAsAction="never"
         android:checkable="true"
         android:title="@string/nightMode"/>
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="90"

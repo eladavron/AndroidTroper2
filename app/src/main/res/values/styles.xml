@@ -23,6 +23,7 @@
     <style name="Actionbar_Light" parent="AppLight">
         <item name="colorControlNormal">@android:color/white</item>
         <item name="actionBarPopupTheme">@style/Actionbar_Popup_Light</item>
+        <item name="android:textColorHint">@android:color/secondary_text_dark</item>
     </style>
 
     <style name="Actionbar_Popup_Light" parent="Actionbar_Light">

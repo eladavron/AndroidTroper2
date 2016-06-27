@@ -42,7 +42,7 @@
         <EditTextPreference
             android:key="defaultZoom"
             android:defaultValue="100"
-            android:title="@string/defaultZoom"
+            android:title="@string/defaultFont"
             android:inputType="number"
             android:maxLength="3"
             android:numeric="integer"/>
@@ -133,16 +133,6 @@
     <PreferenceCategory
         android:title="@string/advancedSettings"
         android:key="advanced">
-        <CheckBoxPreference
-            android:key="kitkatReflow"
-            android:defaultValue="true"
-            android:title="@string/kitkatReflow"/>
-        <CheckBoxPreference
-            android:key="reflowMargin"
-            android:defaultValue="true"
-            android:dependency="kitkatReflow"
-            android:title="@string/kitkatReflowPadding"
-            android:summary="@string/kitkatReflowPaddingWarning"/>
 
         <EditTextPreference
             android:defaultValue="10"

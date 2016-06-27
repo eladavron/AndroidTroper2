@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/fontMinus"
+        android:orderInCategory="1"
+        android:title="@string/fontMinus"
+        android:icon="@drawable/ic_zoom_out_black_36dp"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/fontLabel"
+        android:title=""
+        android:orderInCategory="5"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/fontPlus"
+        android:orderInCategory="10"
+        android:title="@string/fontMinus"
+        android:icon="@drawable/ic_zoom_in_black_36dp"
+        app:showAsAction="always"/>
+</menu>

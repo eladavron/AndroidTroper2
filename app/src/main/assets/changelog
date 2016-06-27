@@ -1,6 +1,13 @@
 Troper 2.8
 ========
 
+2.8.2
+====
+[*] New "Font Scaling" toolbar - change font size on the fly!
+[*] Zooming will no longer be using an old JavaScript hack that causes weird rotation issues.
+[*] Removed some junk code to improve parsing times for articles (if only by a little)
+[*] Fixed some minor theming issues with the search bar
+
 2.8.1
 ====
 [*] HOPEFULLY Fixed a performance issue that was affecting some people

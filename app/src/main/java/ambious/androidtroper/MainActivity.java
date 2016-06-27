@@ -14,6 +14,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -32,6 +34,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.ShareActionProvider;
@@ -266,8 +269,11 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(getResources(), R.drawable.logo, options);
+        BitmapFactory.decodeResource(getResources(), R.drawable.trash, options);
         ImageView logoView = (ImageView) findViewById(R.id.logo);
-        logoView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.logo, width, height));
+        if (logoView != null) {
+            logoView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.logo, width, height));
+        }
 
         setNightMode(_nightMode);
         handleIntent(getIntent());
@@ -300,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
             int _current = _tabState.getInt("selectedTab",0);
             _tabList.setItemChecked(_current,true);
             _pager.setCurrentItem(_current - 1); //Pager indices are -1 compared to list.
-            _tabState.edit().clear().commit();
+            _tabState.edit().clear().apply();
         }
         Log.d(LOG_TAG,"Tabs restored!");
     }
@@ -674,16 +680,16 @@ public class MainActivity extends AppCompatActivity {
             else
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
 
-            // Check screen height
-            //TODO: This might be useless, try removing
-            if (_pager.getVisibleArticle() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && _mainPreferences.getBoolean("kitkatReflow", true))
-            {
-                WebView webView = _pager.getWebView(_pager.getVisibleArticle().getIndex());
-                if (webView != null){
-                    webView.evaluateJavascript("reflow()", null);
-                    webView.setScrollX(0);
-                }
-            }
+//            // Check screen height
+//            if (_pager.getVisibleArticle() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+//            {
+//                WebView webView = _pager.getWebView(_pager.getVisibleArticle().getIndex());
+//                if (webView != null){
+//                    final String REFLOW_TEXT = "javascript:document.getElementsByTagName('body')[0].style.width=window.innerWidth+'px'";
+//                    webView.evaluateJavascript(REFLOW_TEXT, null);
+////                    webView.setScrollX(0);
+//                }
+//            }
         } catch (Exception ex)
         {
             Log.e(LOG_TAG,"Something went wrong validating rotation!");
@@ -870,16 +876,19 @@ public class MainActivity extends AppCompatActivity {
                 menu.findItem(R.id.action_favorite).setVisible(true);
                 menu.findItem(R.id.action_find).setVisible(true);
                 menu.findItem(R.id.action_share).setVisible(true);
+                menu.findItem(R.id.action_view_options).setVisible(true);
                 MenuItem shareItem = menu.findItem(R.id.action_share);
                 ShareActionProvider _shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
                 _shareActionProvider.setShareIntent(getDefaultShareIntent());
+
             }
-            else
+            else //No article displayed
             {
                 menu.findItem(R.id.action_shuffle).setVisible(false);
                 menu.findItem(R.id.action_favorite).setVisible(false);
                 menu.findItem(R.id.action_find).setVisible(false);
                 menu.findItem(R.id.action_share).setVisible(false);
+                menu.findItem(R.id.action_view_options).setVisible(false);
             }
         }
         return true;
@@ -937,6 +946,56 @@ public class MainActivity extends AppCompatActivity {
                     item.setChecked(false);
                     return true;
                 }
+            case R.id.action_view_options:
+                View viewCard = findViewById(R.id.viewCard);
+                final Toolbar viewOptions = (Toolbar) viewCard.findViewById(R.id.fontToolbar);
+                if (viewCard.getVisibility() == View.GONE) //Need to show it
+                {
+                    viewOptions.inflateMenu(R.menu.view_options);
+                    ((ActionMenuItemView) viewOptions.findViewById(R.id.fontLabel)).setTitle(_mainPreferences.getString("defaultZoom","100") + "%");
+                    ActionMenuItemView btnMinus = (ActionMenuItemView) viewOptions.findViewById(R.id.fontMinus);
+                    ActionMenuItemView btnPlus = (ActionMenuItemView) viewOptions.findViewById(R.id.fontPlus);
+                    final ActionMenuItemView fontLabel = (ActionMenuItemView) viewOptions.findViewById(R.id.fontLabel);
+                    btnMinus.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String oldZoom = _mainPreferences.getString("defaultZoom","100");
+                            int newZoom = Integer.valueOf(oldZoom) - 5;
+                            SharedPreferences.Editor _editor = _mainPreferences.edit();
+                            _editor.putString("defaultZoom", String.valueOf(newZoom));
+                            _editor.apply();
+                            MyWebView _webView = _pager.getWebView(_pager.getCurrentItem());
+                            if (_webView != null)
+                                _webView.getSettings().setTextZoom(newZoom);
+                            fontLabel.setTitle(_mainPreferences.getString("defaultZoom","100") + "%");
+                        }
+                    });
+                    btnMinus.setIcon(_nightMode ? ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_zoom_out_white_36dp) : ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_zoom_out_black_36dp));
+
+                    btnPlus.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String oldZoom = _mainPreferences.getString("defaultZoom","100");
+                            int newZoom = Integer.valueOf(oldZoom) + 5;
+                            SharedPreferences.Editor _editor = _mainPreferences.edit();
+                            _editor.putString("defaultZoom", String.valueOf(newZoom));
+                            _editor.apply();
+                            MyWebView _webView = _pager.getWebView(_pager.getCurrentItem());
+                            if (_webView != null)
+                                _webView.getSettings().setTextZoom(newZoom);
+                            fontLabel.setTitle(_mainPreferences.getString("defaultZoom","100") + "%");
+                        }
+                    });
+                    btnPlus.setIcon(_nightMode ? ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_zoom_in_white_36dp) : ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_zoom_in_black_36dp));
+                    viewCard.setVisibility(View.VISIBLE);
+                    viewCard.bringToFront();
+                }
+                else //Card is showing
+                {
+                    viewOptions.getMenu().clear();
+                    viewCard.setVisibility(View.GONE);
+                }
+                return true;
             case R.id.action_lockRotation: //Rotation settings
                 if(!item.isChecked()) //Wasn't locked - lock it!
                 {
@@ -962,7 +1021,7 @@ public class MainActivity extends AppCompatActivity {
                 addToFavorites(_pager.getVisibleArticle().getName(),_pager.getVisibleArticle().getUrl());
                 return true;
             case R.id.action_find:
-                _pager.getWebView(_pager.getCurrentItem()).showFindDialog(null,true);
+                _pager.getWebView(_pager.getCurrentItem()).showFindDialog(null,true); //TODO: Deprecate
                 return true;
             case R.id.action_about: //About
                 Intent _intent = new Intent(this,SettingsActivity.class).addFlags(FLAG_ABOUT);
@@ -1269,7 +1328,15 @@ public class MainActivity extends AppCompatActivity {
 
             if (_pager.getCurrentItem() == index) //If the currently removed tab is displayed
             {
-                tabToRemove.setForeground(getResources().getDrawable(R.drawable.trash));
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+                int height = size.y;
+                Drawable trash = new BitmapDrawable(getResources(),decodeSampledBitmapFromResource(getResources(), R.drawable.trash, width, height));
+                tabToRemove.findViewById(R.id.tintOverlay).setVisibility(View.VISIBLE);
+                tabToRemove.findViewById(R.id.tintOverlay).bringToFront();
+                tabToRemove.setForeground(trash);
                 tabToRemove.setForegroundGravity(Gravity.CENTER);
                 tabToRemove.startAnimation(animOut);
                 new Handler().postDelayed(new Runnable() {
@@ -1356,12 +1423,12 @@ public class MainActivity extends AppCompatActivity {
             }
             MyWebView _webView = _pager.getWebView(_id);
             _webView.setWebViewClient(new InternalWebViewClient(_id));
+            _webView.getSettings().setDefaultTextEncodingName("iso-8859-1");
             _webView.getSettings().setSupportZoom(_mainPreferences.getBoolean("allowZoom", true));
             _webView.getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("zoomToolbar", true));
-            _webView.getSettings().setDefaultTextEncodingName("iso-8859-1");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-                Log.d(LOG_TAG,"Article loaded with scale: " + _webView.getScale());
-            }
+            int defaultZoom = Integer.valueOf(_mainPreferences.getString("defaultZoom", "100"));
+            _webView.getSettings().setTextZoom(defaultZoom);
+            Log.d(LOG_TAG,"Article loaded with scale: " + _webView.getSettings().getTextZoom());
             _webView.setBackgroundColor(_nightMode ? Color.BLACK : Color.WHITE);
             _webView.loadDataWithBaseURL(null, _html, "text/html", "iso-8859-1", null);
             _webView.scrollTo(0,0);
@@ -2133,21 +2200,9 @@ public class MainActivity extends AppCompatActivity {
                         "       folders[i].style.backgroundColor=\"#EEF\";\n" +
                         "       folders[i].style.borderColor=\"#BBBBC3\";\n" +
                         "   }\n" +
-                        "}   \n";
-                if (_mainPreferences.getBoolean("reflowMargin",true))
-                {
-                    jsFunction +=
-                            "function reflow(){\n" +
-                                    "          document.body.style.width = (window.innerWidth - 15);\n"+
-                                    "}" +
-                                    "</script>";
-                } else {
-                    jsFunction +=
-                            "function reflow(){\n" +
-                                    "          document.body.style.width = (window.innerWidth);\n"+
-                                    "}" +
-                                    "</script>";
-                }
+                        "}\n" +
+                        "</script>";
+
 
 
                 //Replace all spoiler tags with the new internal format - IF defined so by the settings
@@ -2173,10 +2228,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                double defaultZoom = Double.valueOf(_mainPreferences.getString("defaultZoom", "100")) / 100;
-
                 String head = "<head>" +
-                        "<meta name=\"viewport\" content=\"width=device-width,initial-scale=" + defaultZoom + ",minimum-scale=0.1,maximum-scale=5.0\"/>\n" +
                         "<style type=\"text/css\">\n" +
                         "div.folderlabel\n" +
                         "{\n" +
@@ -2272,18 +2324,6 @@ public class MainActivity extends AppCompatActivity {
                 String finalHTML = "<html>" + head + "<body onload=\"" + mode + "\"><div id=\"contentRoot\">" + wikiText.html() + "</div></body></html>";
                 if (isCancelled()) return null;
                 //Return final result
-
-                String filename = "output.html";
-
-                FileOutputStream outputStream;
-
-                try {
-                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(finalHTML.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 return new Article(_name,_url,_id,finalHTML, _subPages);
             }
             catch (UnknownHostException e)
@@ -2379,7 +2419,6 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(_context);
                 alertDialog.setTitle(_title);
                 alertDialog.setMessage(_message);
-                alertDialog.setIcon(R.drawable.ic_error_light);
                 alertDialog.setNegativeButton(android.R.string.ok,new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -2422,25 +2461,8 @@ public class MainActivity extends AppCompatActivity {
      */
     public class InternalWebViewClient extends WebViewClient {
         private int _id = -1;
-        boolean scaleChangedRunnablePending = false;
-        public InternalWebViewClient (int id)
-        {
+         public InternalWebViewClient(int id) {
             _id = id;
-        }
-        @Override
-        public void onScaleChanged(final WebView webView, float oldScale, float newScale) {
-            if (scaleChangedRunnablePending || (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) || !_mainPreferences.getBoolean("kitkatReflow",true)) return;
-            Log.d(LOG_TAG, "Changing scale: " + oldScale + " --> " + newScale);
-            webView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        webView.evaluateJavascript("reflow()", null);
-                    }
-                    webView.setScrollX(0);
-                    scaleChangedRunnablePending = false;
-                }
-            }, 500);
         }
 
         @Override
@@ -2563,6 +2585,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Used to decode bitmaps for lower memory consumption
+     */
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
                                                          int reqWidth, int reqHeight) {
 
@@ -2579,6 +2605,9 @@ public class MainActivity extends AppCompatActivity {
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
+    /**
+     * Used to calculate bitmap sizes for lower memory consumption
+     */
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
@@ -2598,7 +2627,6 @@ public class MainActivity extends AppCompatActivity {
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
 }

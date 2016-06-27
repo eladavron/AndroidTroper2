@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.SearchRecentSuggestions;
@@ -19,7 +18,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.*;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -475,7 +479,6 @@ public class SettingsActivity extends AppCompatActivity {
             _backup.setSummary(getString(R.string.backupSummary) + " "+ Environment.getExternalStorageDirectory() + "/AndroidTroper/Backup/");
 
             Preference _restore = findPreference("restoreSettings");
-//            _restore.setEnabled(doesBackupExist());
             _restore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -483,12 +486,6 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 }
             });
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
-            {
-                PreferenceCategory advanced = (PreferenceCategory) findPreference("advanced");
-                advanced.removePreference(findPreference("kitkatReflow"));
-                advanced.removePreference(findPreference("reflowMargin"));
-            }
         }
 
         @Override

@@ -3,13 +3,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_sort"
         android:title="@string/Sort"
         android:icon="@drawable/ic_sort"
         app:showAsAction="always|withText">
         <menu>
-            <group android:id="@+id/menu_nav_group"
-                   android:checkableBehavior="single">
+            <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/sort_name"
                     android:title="@string/sortByName"
