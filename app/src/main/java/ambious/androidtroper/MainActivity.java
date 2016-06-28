@@ -60,6 +60,7 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -847,6 +848,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView _searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         _searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        ((EditText)_searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text)).setTextColor(Color.WHITE);
         _searchView.setSubmitButtonEnabled(true);
         _searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
