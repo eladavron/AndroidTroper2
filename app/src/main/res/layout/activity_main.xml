@@ -32,6 +32,8 @@
                     android:contentDescription="@string/app_name"
                     android:padding="4dp" />
 
+
+
                 <!-- Links -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -40,9 +42,21 @@
                     android:layout_gravity="bottom">
 
                     <TextView
-                        android:id="@+id/WebsiteText"
+                        android:id="@+id/TwitterText"
                         style="@style/Base.Widget.AppCompat.Button.Colored"
-                        android:background="?android:attr/windowBackground"
+                        android:textColor="@android:color/white"
+                        android:drawableLeft="@drawable/twitter"
+                        android:textAllCaps="false"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dip"
+                        android:text="@string/TwitterText"
+                        android:singleLine="false"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/WebsiteText"
+                        style="@style/Base.Widget.AppCompat.Button"
                         android:textAllCaps="false"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -51,18 +65,8 @@
                         android:singleLine="false"
                         android:gravity="center" />
 
-                    <TextView
-                        android:id="@+id/GithubText"
-                        style="@style/Base.Widget.AppCompat.Button.Colored"
-                        android:background="?android:attr/windowBackground"
-                        android:textAllCaps="false"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="48dip"
-                        android:text="@string/GitHubClick"
-                        android:singleLine="false"
-                        android:gravity="center"/>
                 </LinearLayout>
+
             </FrameLayout>
         </LinearLayout>
 

@@ -123,12 +123,11 @@
     <string name="byline">by Elad Avron</string>
     <string name="Version">Version</string>
     <string name="build">build</string>
-    <string name="WebsiteClick">For News, Updates, Bug Reports or just to say \"Hi\", visit our new website by clicking here!</string>
-    <string name="GitHubClick">Or click here to visit our GitHub repository to take a peek at the source code</string>
+    <string name="WebsiteClick">...or click here to check out our brand new website!</string>
+    <string name="TwitterText">Click here to follow us on Twitter for all the latest updates!</string>
     <string name="cc">This work is licensed under a <a href='http://creativecommons.org/licenses/by-nc-sa/3.0/'>Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</string>
     <string name="usesLibraries"><u>This application uses the following libraries:</u></string>
     <string name="jsoup">• <a href='http://jsoup.org/'>jsoup-1.9.2</a></string>
-    <string name="assets">Assets in this app were created using the <a href='http://android-ui-utils.googlecode.com/hg/asset-studio/dist/index.html'>Android Asset Studio</a>. It is highly recommended!</string>
     <string name="changelog"><u>Changelog:</u></string>
     <string name="github">Source code available at <a href='https://github.com/eladavron/AndroidTroper2'>GitHub</a>!</string>
 

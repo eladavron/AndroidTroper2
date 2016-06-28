@@ -189,20 +189,24 @@ public class MainActivity extends AppCompatActivity {
         };
 
         TextView  _websiteClick = (TextView ) findViewById(R.id.WebsiteText);
-        _websiteClick.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.eladavron.com/androidtroper/")));
-            }
-        });
+        if (_websiteClick != null) {
+            _websiteClick.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.eladavron.com/androidtroper/")));
+                }
+            });
+        }
 
-        TextView _githubClick = (TextView) findViewById(R.id.GithubText);
-        _githubClick.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/eladavron/AndroidTroper2")));
-            }
-        });
+        TextView twitter = (TextView) findViewById(R.id.TwitterText);
+        if (twitter != null) {
+            twitter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/TroperApp")));
+                }
+            });
+        }
 
 
         //Set interface settings//
@@ -750,9 +754,7 @@ public class MainActivity extends AppCompatActivity {
         {
             if (mainView != null)
             {
-                mainView.setBackgroundColor(getResources().getColor(android.R.color.black));
-                ((TextView)mainView.findViewById(R.id.WebsiteText)).setTextColor(getResources().getColor(android.R.color.white));
-                ((TextView)mainView.findViewById(R.id.GithubText)).setTextColor(getResources().getColor(android.R.color.white));
+                mainView.setBackgroundColor(ContextCompat.getColor(this,android.R.color.black));
             }
             if (_pager != null)
             {
@@ -774,8 +776,6 @@ public class MainActivity extends AppCompatActivity {
             if (mainView != null)
             {
                 mainView.setBackgroundColor(getResources().getColor(android.R.color.white));
-                ((TextView)mainView.findViewById(R.id.WebsiteText)).setTextColor(getResources().getColor(android.R.color.black));
-                ((TextView)mainView.findViewById(R.id.GithubText)).setTextColor(getResources().getColor(android.R.color.black));
             }
             if (_pager != null)
             {
@@ -1751,29 +1751,6 @@ public class MainActivity extends AppCompatActivity {
                 ex.printStackTrace();
                 return false;
             }
-        }
-    }
-
-    public class ActiveDrawerListener implements DrawerLayout.DrawerListener {
-
-        @Override
-        public void onDrawerSlide(View view, float v) {
-
-        }
-
-        @Override
-        public void onDrawerOpened(View view) {
-
-        }
-
-        @Override
-        public void onDrawerClosed(View view) {
-
-        }
-
-        @Override
-        public void onDrawerStateChanged(int i) {
-
         }
     }
 

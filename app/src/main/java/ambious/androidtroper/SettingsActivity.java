@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,15 +103,18 @@ public class SettingsActivity extends AppCompatActivity {
     public static class AboutFragment extends Fragment {
         private final String LOG_TAG = "AndroidTroper";
         PackageInfo packageInfo;
+        private SharedPreferences _mainPreferences;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             try{
                 packageInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+                _mainPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                Boolean _nightMode = _mainPreferences.getBoolean("nightMode",false);
                 // Inflate the layout for this fragment
                 View returnView = inflater.inflate(R.layout.about, container, false);
-
+                returnView.setBackgroundColor(ContextCompat.getColor(getContext(),_nightMode ? android.R.color.black : android.R.color.white));
                 Display display = getActivity().getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
@@ -143,10 +148,8 @@ public class SettingsActivity extends AppCompatActivity {
                 TextView _ccText = (TextView) returnView.findViewById(R.id.ccText);
                 TextView _jsoup = (TextView) returnView.findViewById(R.id.jsoup);
                 TextView _changeLog = (TextView) returnView.findViewById(R.id.changeLog);
-                TextView _assets = (TextView) returnView.findViewById(R.id.assets);
                 String _about = LoadFile("changelog", false);
                 _changeLog.setText(_about);
-                _assets.setMovementMethod(LinkMovementMethod.getInstance());
                 _jsoup.setMovementMethod(LinkMovementMethod.getInstance());
                 _ccText.setMovementMethod(LinkMovementMethod.getInstance());
                 return returnView;
