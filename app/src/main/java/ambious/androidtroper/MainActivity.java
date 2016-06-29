@@ -625,18 +625,18 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences.Editor recentEditor = _recentSettings.edit();
                 recentEditor.clear();
                 recentEditor.putInt("recentCount",0);
-                recentEditor.commit();
+                recentEditor.apply();
                 SharedPreferences.Editor favoriteEditor = _favoriteSettings.edit();
                 favoriteEditor.clear();
                 favoriteEditor.putInt("favCount",0);
-                favoriteEditor.commit();
+                favoriteEditor.apply();
                 SharedPreferences.Editor readLaterEditor = _readLaterSettings.edit();
                 readLaterEditor.clear();
-                readLaterEditor.commit();
+                readLaterEditor.apply();
                 SharedPreferences.Editor _mainEditor = _mainPreferences.edit();
                 _mainEditor.clear();
                 _mainEditor.putBoolean("firstRun",false);
-                _mainEditor.commit();
+                _mainEditor.apply();
             }
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             String versionInfo = packageInfo.versionName;
@@ -658,12 +658,12 @@ public class MainActivity extends AppCompatActivity {
                 textView.setTextAppearance(this,android.R.style.TextAppearance_Small);
                 SharedPreferences.Editor _editor = _mainPreferences.edit();
                 _editor.putString("versionString",packageInfo.versionName);
-                _editor.commit();
+                _editor.apply();
             }
             if (!_mainPreferences.getBoolean("tabletModeSet",false)) //Settings have not been entered, some settings need to be enforced
             {
                 SharedPreferences.Editor editor = _mainPreferences.edit();
-                editor.putBoolean("tabletView",getResources().getBoolean(R.bool.isTablet)).putBoolean("tabletModeSet",true).commit();
+                editor.putBoolean("tabletView",getResources().getBoolean(R.bool.isTablet)).putBoolean("tabletModeSet",true).apply();
             }
         }
         catch (PackageManager.NameNotFoundException nnfex)
@@ -936,7 +936,7 @@ public class MainActivity extends AppCompatActivity {
 
                     SharedPreferences.Editor _editor = _mainPreferences.edit();
                     _editor.putBoolean("nightMode", true);
-                    _editor.commit();
+                    _editor.apply();
                     item.setChecked(true);
                     return true;
                 }
@@ -944,7 +944,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     SharedPreferences.Editor _editor = _mainPreferences.edit();
                     _editor.putBoolean("nightMode",false);
-                    _editor.commit();
+                    _editor.apply();
                     item.setChecked(false);
                     return true;
                 }
@@ -1003,7 +1003,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     SharedPreferences.Editor _editor = _mainPreferences.edit();
                     _editor.putBoolean("lockRotation", true);
-                    _editor.commit();
+                    _editor.apply();
                     item.setChecked(true);
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
                     return true;
@@ -1011,7 +1011,7 @@ public class MainActivity extends AppCompatActivity {
                 else { //Locked - unlock it!
                     SharedPreferences.Editor _editor = _mainPreferences.edit();
                     _editor.putBoolean("lockRotation", false);
-                    _editor.commit();
+                    _editor.apply();
                     item.setChecked(false);
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
                     return true;
@@ -1045,16 +1045,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed ()
     {
-        //Detect if current view is an article view
-        if (_tabList.getCount() <= 1 || _pager.getCurrentItem() == -1) //The "position" refers to the position within the view, so it's always + 1 compared to the list
-        {
-            confirmExit();
-            return;
-        }
+
         //If the drawer is open, simple close it
         if (_drawerLayout.isDrawerOpen(Gravity.LEFT))
         {
             _drawerLayout.closeDrawer(Gravity.LEFT);
+            return;
+        }
+
+        //Detect if current view is an article view
+        if (_tabList.getCount() <= 1 || _pager.getCurrentItem() == -1) //The "position" refers to the position within the view, so it's always + 1 compared to the list
+        {
+            confirmExit();
             return;
         }
         int _current = _pager.getCurrentItem();
@@ -1064,33 +1066,35 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG_TAG,"Animation pending, blocking 'Back' key!");
             return;
         }
-        if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null && _pager.getWebView(_current).getVisibility() == View.VISIBLE) //If it's currently loading something AND there's an underlying webpage
+        if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null) //If it's currently LOADING something AND there's an underlying webpage
         {
             _pager.getVisibleArticle().getArticleFetcher().cancel(true);
-            _pager.getLoadingScreen(_pager.getCurrentItem()).setVisibility(View.GONE);
-            invalidateTitle();
-            return;
-        } else if (_visibleFragment != null && _pager.getLoadingScreen(_current).getVisibility() == View.VISIBLE && _pager.getWebView(_current) != null && _pager.getWebView(_current).getVisibility() == View.GONE) //If it's currently loading something but there's NO  underlying webpage
+            if (_pager.getWebView(_current).getVisibility() == View.VISIBLE) {
+                _pager.getLoadingScreen(_pager.getCurrentItem()).setVisibility(View.GONE);
+                invalidateTitle();
+            }
+            else
+                removeTab(_current);
+        } else if (_visibleFragment != null) //There's an article open
         {
-            _pager.getVisibleArticle().getArticleFetcher().cancel(true);
-            removeTab(_current);
-            return;
-        } else if (_visibleFragment != null && _visibleFragment.getHistorySize() > 1) //There's way to go back
-        {
-            _visibleFragment.History.pop(); //Removes the last one, as it is the CURRENT one
-            Article lastItem = _visibleFragment.History.peek();
-            parseArticle (lastItem,false);
-            return;
-        }
-        else if (_visibleFragment != null && _visibleFragment.getHistorySize() == 1) //No way back, it's the last page.
-        {
-            removeTab(_pager.getCurrentItem());
-            return;
+            View viewCard = _pager.getVisibleFragment().getView().findViewById(R.id.viewCard);
+            final Toolbar viewOptions = (Toolbar) viewCard.findViewById(R.id.fontToolbar);
+            if (viewCard.getVisibility() == View.VISIBLE) {
+                viewOptions.getMenu().clear();
+                viewCard.setVisibility(View.GONE);
+            } else if (_visibleFragment.getHistorySize() > 1) //There's an article open and something in the history
+            {
+                _visibleFragment.History.pop(); //Removes the last one, as it is the CURRENT one
+                Article lastItem = _visibleFragment.History.peek();
+                parseArticle(lastItem, false);
+            } else if (_visibleFragment.getHistorySize() == 1) //Article open and nothing in the history
+            {
+                removeTab(_pager.getCurrentItem());
+            }
         }
         else
         {
             confirmExit();
-            return;
         }
     }
 
@@ -1513,7 +1517,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Log.i(LOG_TAG,"Article already in history, updating time string");
                     editor.putString("recentTime" + i, _time);
-                    editor.commit();
+                    editor.apply();
                     return;
                 }
             }
@@ -1541,7 +1545,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("recentUrl" + _newSlot, _url);
             editor.putString("recentTime" + _newSlot, _time);
             editor.putInt("recentCount", _recentCount);
-            editor.commit();
+            editor.apply();
         }	catch (Exception e){
             Log.e(LOG_TAG, "Saving to history failed!");
             e.printStackTrace();
@@ -1562,7 +1566,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Log.i(LOG_TAG,"Article already in list, updating time string");
                     editor.putString("rlTime" + i, _time);
-                    editor.commit();
+                    editor.apply();
                     Toast.makeText(this,"\"" + _title + "\" " + getString(R.string.alreadyInReadLater),Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -1573,7 +1577,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("rlUrl" + _rlCount, _url);
             editor.putString("rlTime" + _rlCount, _time);
             editor.putInt("rlCount", _rlCount);
-            editor.commit();
+            editor.apply();
             Toast.makeText(this,"\"" + _title + "\" " + getString(R.string.addedToReadLater),Toast.LENGTH_SHORT).show();
         }	catch (Exception e){
             Log.e(LOG_TAG, "Saving to read-later failed: " + e.getMessage());
@@ -1594,7 +1598,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Log.i(LOG_TAG,"Article already in favorites, updating time string");
                     editor.putString("favTime" + i, _time);
-                    editor.commit();
+                    editor.apply();
                     Toast.makeText(this,"\"" + _title + "\" " + getString(R.string.alreadyInFavorites),Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -1605,7 +1609,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("favUrl" + _favCount, _url);
             editor.putString("favTime" + _favCount, _time);
             editor.putInt("favCount", _favCount);
-            editor.commit();
+            editor.apply();
             Toast.makeText(this,"\"" + _title + "\" " + getString(R.string.addedToFav),Toast.LENGTH_SHORT).show();
         }	catch (Exception e){
             Log.e(LOG_TAG, "Saving to favorites failed: " + e.getMessage());
@@ -2440,7 +2444,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public class InternalWebViewClient extends WebViewClient {
         private int _id = -1;
-         public InternalWebViewClient(int id) {
+        public InternalWebViewClient(int id) {
             _id = id;
         }
 

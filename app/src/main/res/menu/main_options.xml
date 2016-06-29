@@ -11,7 +11,7 @@
         android:orderInCategory="10"
         app:showAsAction="ifRoom"
         android:title="@string/defaultFont"
-        android:icon="@drawable/ic_text_fields_white_36dp"
+        android:icon="@mipmap/ic_font"
         android:visible="false"/>
 
     <item android:id="@+id/action_shuffle"

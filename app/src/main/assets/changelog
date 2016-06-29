@@ -5,6 +5,12 @@ Troper 2.8
 ================
 [*] Fixed font scaling toolbar only showing on first tab
 
+2.8.2.4
+=======
+[*] Changed font scaling toolbar icon to something less ugly
+[*] Pressing "back" while drawer is displayed with no articles open will now close the drawer rather than exit the app
+[*] Pressing "back" while font scaling toolbar is shown will now hide it and do nothing else.
+
 2.8.2
 ====
 [*] New "Font Scaling" toolbar - change font size on the fly!
