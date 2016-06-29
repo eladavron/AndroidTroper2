@@ -1,11 +1,9 @@
 Troper 2.8
 ========
 
-2.8.2 Build 2822
+2.8.2 Build 2823
 ================
-[*] Added branding to our brand new Twitter account!
-[*] Changed the "about" screen's background to black in nightmode rather than gray
-[*] Removed some junk text from the "about" screen that was no longer relevant.
+[*] Fixed font scaling toolbar only showing on first tab
 
 2.8.2
 ====
@@ -13,6 +11,7 @@ Troper 2.8
 [*] Zooming will no longer be using an old JavaScript hack that causes weird rotation issues.
 [*] Removed some junk code to improve parsing times for articles (if only by a little)
 [*] Fixed some minor theming issues with the search bar
+[*] Added branding to our brand new Twitter account!
 
 2.8.1
 ====

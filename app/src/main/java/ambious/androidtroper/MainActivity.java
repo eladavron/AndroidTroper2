@@ -949,7 +949,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             case R.id.action_view_options:
-                View viewCard = findViewById(R.id.viewCard);
+                View viewCard = _pager.getVisibleFragment().getView().findViewById(R.id.viewCard);
                 final Toolbar viewOptions = (Toolbar) viewCard.findViewById(R.id.fontToolbar);
                 if (viewCard.getVisibility() == View.GONE) //Need to show it
                 {
