@@ -5,6 +5,7 @@
     <item
         android:title="@string/Sort"
         android:icon="@drawable/ic_sort"
+
         app:showAsAction="always|withText">
         <menu>
             <group android:checkableBehavior="single">

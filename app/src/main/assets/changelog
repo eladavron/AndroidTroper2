@@ -1,15 +1,11 @@
 Troper 2.8
 ========
 
-2.8.2 Build 2823
+2.8.2 Build 2825
 ================
-[*] Fixed font scaling toolbar only showing on first tab
-
-2.8.2.4
-=======
-[*] Changed font scaling toolbar icon to something less ugly
-[*] Pressing "back" while drawer is displayed with no articles open will now close the drawer rather than exit the app
-[*] Pressing "back" while font scaling toolbar is shown will now hide it and do nothing else.
+[*] Zoom is now decoupled from the zoom toolbar, so you either have zoom or you don't. (This has nothing to do with the font scaling bar which is available either way).
+[*] Fixed even MORE minor theming issues with the toolbar (this time in the recents/favorites screen).
+[*] Normalized the subpages dropdown theme.
 
 2.8.2
 ====

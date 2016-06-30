@@ -31,9 +31,7 @@
     <string name="preventScreenOff">Prevent Sleep</string>
     <string name="preventScreenOffSum">Enable to prevent your screen from shutting down while reading an article.</string>
     <string name="allowZoom">Allow Zoom</string>
-    <string name="allowZoomDesc">Allow to zoom in and out using gestures</string>
-    <string name="zoomToolbar">Enable Zoom Toolbar</string>
-    <string name="zoomToolbarDesc">Enable a floating toolbar with zoom buttons!</string>
+    <string name="zoomToolbarDesc">Using either gestures or the floating zoom buttons.\nThis does not reflow text as it used to, only zooms in and out like in the browser.</string>
     <string name="showSpoilers">Show Spoilers</string>
     <string name="showSpoilersDesc">When enabled, spoilers will not be hidden</string>
     <string name="showWarning">Warn me</string>

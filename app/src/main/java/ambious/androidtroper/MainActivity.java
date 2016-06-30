@@ -730,12 +730,8 @@ public class MainActivity extends AppCompatActivity {
                     } else if (key.equals("allowZoom")){
                         for (int i=0;i<_pageAdapter.getCount();i++)
                         {
-                            _pager.getWebView(i).getSettings().setSupportZoom(_mainPreferences.getBoolean("allowZoom",true));
-                        }
-                    } else if (key.equals("zoomToolbar")){
-                        for (int i=0;i<_pageAdapter.getCount();i++)
-                        {
-                            _pager.getWebView(i).getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("allowZoom",true));
+                            _pager.getWebView(i).getSettings().setSupportZoom(_mainPreferences.getBoolean("allowZoom", true));
+                            _pager.getWebView(i).getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("allowZoom", true));
                         }
                     } else if (key.equals("lockRotation")){
                         if  (!_mainPreferences.getBoolean("lockRotation",false))
@@ -1023,7 +1019,8 @@ public class MainActivity extends AppCompatActivity {
                 addToFavorites(_pager.getVisibleArticle().getName(),_pager.getVisibleArticle().getUrl());
                 return true;
             case R.id.action_find:
-                _pager.getWebView(_pager.getCurrentItem()).showFindDialog(null,true); //TODO: Deprecate
+                MyWebView _webView = _pager.getWebView(_pager.getCurrentItem());
+                _webView.showFindDialog(null,true); //TODO: Deprecate
                 return true;
             case R.id.action_about: //About
                 Intent _intent = new Intent(this,SettingsActivity.class).addFlags(FLAG_ABOUT);
@@ -1431,7 +1428,7 @@ public class MainActivity extends AppCompatActivity {
             _webView.setWebViewClient(new InternalWebViewClient(_id));
             _webView.getSettings().setDefaultTextEncodingName("iso-8859-1");
             _webView.getSettings().setSupportZoom(_mainPreferences.getBoolean("allowZoom", true));
-            _webView.getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("zoomToolbar", true));
+            _webView.getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("allowZoom", true));
             int defaultZoom = Integer.valueOf(_mainPreferences.getString("defaultZoom", "100"));
             _webView.getSettings().setTextZoom(defaultZoom);
             Log.d(LOG_TAG,"Article loaded with scale: " + _webView.getSettings().getTextZoom());
@@ -1848,6 +1845,7 @@ public class MainActivity extends AppCompatActivity {
             final Article _article = _articles.get(position);
             final TextView textView = (TextView) row.findViewById(android.R.id.text1);
             final ImageButton addToReadLater = (ImageButton) row.findViewById(R.id.addToReadLater);
+            addToReadLater.setImageDrawable(ContextCompat.getDrawable(getContext(),_nightMode ? R.drawable.ic_action_read_later : R.drawable.ic_read_later_light));
             textView.setText(_article.getName());
             addToReadLater.setOnClickListener(new View.OnClickListener() {
                 @Override

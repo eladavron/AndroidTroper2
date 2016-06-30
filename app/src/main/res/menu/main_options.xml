@@ -24,9 +24,8 @@
 
     <item android:id="@+id/action_find"
         android:orderInCategory="15"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:title="@string/findInPage"
-        android:icon="@drawable/ic_find_in_page_white_36dp"
         android:visible="false"/>
 
     <item android:id="@+id/action_share"

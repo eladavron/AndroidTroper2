@@ -8,7 +8,6 @@
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
-    android:background="@color/at_dark"
     >
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -16,7 +15,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:textColor="@android:color/white"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:paddingEnd="@android:dimen/app_icon_size"

@@ -50,14 +50,7 @@
             android:defaultValue="true"
             android:key="allowZoom"
             android:title="@string/allowZoom"
-            android:summary="@string/allowZoomDesc"
-            />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="zoomToolbar"
-            android:title="@string/zoomToolbar"
             android:summary="@string/zoomToolbarDesc"
-            android:dependency="allowZoom"
             />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/Spoilers" >
