@@ -50,11 +50,13 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -684,17 +686,6 @@ public class MainActivity extends AppCompatActivity {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             else
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-
-//            // Check screen height
-//            if (_pager.getVisibleArticle() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-//            {
-//                WebView webView = _pager.getWebView(_pager.getVisibleArticle().getIndex());
-//                if (webView != null){
-//                    final String REFLOW_TEXT = "javascript:document.getElementsByTagName('body')[0].style.width=window.innerWidth+'px'";
-//                    webView.evaluateJavascript(REFLOW_TEXT, null);
-////                    webView.setScrollX(0);
-//                }
-//            }
         } catch (Exception ex)
         {
             Log.e(LOG_TAG,"Something went wrong validating rotation!");
@@ -730,8 +721,17 @@ public class MainActivity extends AppCompatActivity {
                     } else if (key.equals("allowZoom")){
                         for (int i=0;i<_pageAdapter.getCount();i++)
                         {
-                            _pager.getWebView(i).getSettings().setSupportZoom(_mainPreferences.getBoolean("allowZoom", true));
-                            _pager.getWebView(i).getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("allowZoom", true));
+                            MyWebView _webView = _pager.getWebView(i);
+                            if (_webView != null)
+                            {
+                                WebSettings _webViewSettings = _webView.getSettings();
+                                if (_webViewSettings != null)
+                                {
+                                    boolean newValue = prefs.getBoolean(key,true);
+                                    _webViewSettings.setSupportZoom(newValue);
+                                    _webViewSettings.setBuiltInZoomControls(newValue);
+                                }
+                            }
                         }
                     } else if (key.equals("lockRotation")){
                         if  (!_mainPreferences.getBoolean("lockRotation",false))
@@ -1869,6 +1869,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public static class ArticleFragment extends Fragment {
         public Stack<Article> History;
+        private MyWebView _webView;
 
         public ArticleFragment(){
             History = new Stack<Article>();
@@ -1880,12 +1881,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            if (_webView != null)
+                _webView.destroy();
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             //Set fragment local variables to interface
             Log.d(LOG_TAG,"Creating View...");
 
             View v = inflater.inflate(R.layout.tab_fragment,null);
-            WebView _webView = (MyWebView) v.findViewById(R.id.web_view);
+            _webView = (MyWebView) v.findViewById(R.id.web_view);
             _webView.getSettings().setJavaScriptEnabled(true);
             registerForContextMenu(_webView);
             return v;
@@ -2563,6 +2571,17 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(LOG_TAG,"Context menu requested for unknown type.");
                 return;
             }
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event){
+            View viewCard = _pager.getVisibleFragment().getView().findViewById(R.id.viewCard);
+            final Toolbar viewOptions = (Toolbar) viewCard.findViewById(R.id.fontToolbar);
+            if (viewCard.getVisibility() == View.VISIBLE) {
+                viewOptions.getMenu().clear();
+                viewCard.setVisibility(View.GONE);
+            }
+            return super.onTouchEvent(event);
         }
     }
 

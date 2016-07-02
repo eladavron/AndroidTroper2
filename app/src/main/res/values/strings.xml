@@ -65,6 +65,7 @@
     <string name="saveTabs">Save open tabs (if any) before exiting</string>
     <string name="defaultFont">Font Scale</string>
     <string name="fontMinus">Decrease Font Size</string>
+    <string name="someChanges">Some changes will only take effect the next time you start Troper</string>
 
     <!-- Menu Elements -->
     <string name="menu_open_new">Open in new tab</string>

@@ -1,11 +1,11 @@
 Troper 2.8
 ========
 
-2.8.2 Build 2825
+2.8.2 Build 2826
 ================
-[*] Zoom is now decoupled from the zoom toolbar, so you either have zoom or you don't. (This has nothing to do with the font scaling bar which is available either way).
-[*] Fixed even MORE minor theming issues with the toolbar (this time in the recents/favorites screen).
-[*] Normalized the subpages dropdown theme.
+[*] Possibly fixed an issue with the app crashing when switching tabs too quickly (Unreproducible, but addressed via crash logs).
+[*] Font scale toolbar now hides on touch outside of it
+[*] Added a warning about some setting changes not taking effect until after a restart of the app
 
 2.8.2
 ====
@@ -13,6 +13,7 @@ Troper 2.8
 [*] Zooming will no longer be using an old JavaScript hack that causes weird rotation issues.
 [*] Removed some junk code to improve parsing times for articles (if only by a little)
 [*] Fixed some minor theming issues with the search bar
+[*] Normalized the subpages dropdown theme
 [*] Added branding to our brand new Twitter account!
 
 2.8.1

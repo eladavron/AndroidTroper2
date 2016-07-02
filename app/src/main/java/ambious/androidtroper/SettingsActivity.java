@@ -230,7 +230,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             SharedPreferences.Editor editor = _mainPreferences.edit();
                     editor.putBoolean("tabletModeSet",true)
-                    .commit();
+                    .apply();
 
             //Nightmode Settings//
             Preference _nightMode = findPreference("nightMode");
@@ -299,7 +299,7 @@ public class SettingsActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = _recentSettings.edit();
                             editor.clear();
                             editor.putInt("recentCount",0);
-                            editor.commit();
+                            editor.apply();
                             String newSummary = getString(R.string.currentInList) + " " +  _recentSettings.getInt("recentCount",0);
                             arg0.setSummary(newSummary);
                             Toast.makeText(getContext(), R.string.clearRecentSuccess, Toast.LENGTH_SHORT).show();
@@ -375,7 +375,7 @@ public class SettingsActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = _favoriteSettings.edit();
                             editor.clear();
                             editor.putInt("favCount",0);
-                            editor.commit();
+                            editor.apply();
                             String newSummary = getString(R.string.favoriteCount) + " " +  _favoriteSettings.getInt("favCount",0);
                             arg0.setSummary(newSummary);
                             Toast.makeText(getContext(), R.string.clearFavoritesSuccess, Toast.LENGTH_SHORT).show();
@@ -419,7 +419,7 @@ public class SettingsActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = _readLaterSettings.edit();
                             editor.clear();
                             editor.putInt("rlCount",0);
-                            editor.commit();
+                            editor.apply();
                             String newSummary = getString(R.string.rlCount) + " " +  _readLaterSettings.getInt("rlCount",0);
                             arg0.setSummary(newSummary);
                             Toast.makeText(getContext(), R.string.clearReadLaterSuccess, Toast.LENGTH_SHORT).show();
@@ -489,6 +489,13 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 }
             });
+        }
+
+        @Override
+        public void onDestroy()
+        {
+            Toast.makeText(getContext(),R.string.someChanges,Toast.LENGTH_LONG).show();
+            super.onDestroy();
         }
 
         @Override
