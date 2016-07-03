@@ -104,6 +104,7 @@
     <string name="incomingExternal">Incoming Article</string>
     <string name="incomingError">There was a problem with the incoming article\'s URL.</string>
     <string name="neverAsk">Never ask me again!</string>
+    <string name="spoilerWarning">Warning! Spoilers are not hidden!\nYou can change this in the app\'s Settings page.</string>
 
     <!--Search Strings-->
     <string name="searchSettings">Search Settings</string>
@@ -138,15 +139,18 @@
 
 
     <!-- Update -->
-    <string name="updateTitle">\"Troper\" Updated!</string>
-    <string name="updateSummary">Troper has been updated!\n\n
-Version 2.8.2:\n
+    <string name="updateTitle">\"Troper\" has been Updated!</string>
+    <string name="updateSummary">Version 2.8.2:\n
         • \"Android Troper\" is now just \"Troper\" due to Google\'s new guidelines.\n
         • Added new \"Font Scale\" toolbar.\n
         • Zooming is now native (Chrome like).\n
         • Refreshed the app\'s themes.\n
         • Updated a lot of behind-the-scenes stuff.\n
         \n
-        A more detailed update log can be found in the \"About\" screen or on our GitHub.\n
+        <b>PLEASE</b> join the beta program!\n
+        I really need testers!\n
+        You can join through our website (link in the main app page)\n
+        \n
+        A more detailed update log can be found in the \"About\".\n
         Don\'t worry, this message only appears once per update!</string>
 </resources>

@@ -65,6 +65,7 @@
             android:key="showWarning"
             android:summary="@string/showWarningDesc"
             android:title="@string/showWarning" />
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:dependency="showSpoilers"

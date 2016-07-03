@@ -1431,6 +1431,8 @@ public class MainActivity extends AppCompatActivity {
             _webView.getSettings().setBuiltInZoomControls(_mainPreferences.getBoolean("allowZoom", true));
             int defaultZoom = Integer.valueOf(_mainPreferences.getString("defaultZoom", "100"));
             _webView.getSettings().setTextZoom(defaultZoom);
+            if (_mainPreferences.getBoolean("showSpoilers",false) && _mainPreferences.getBoolean("showWarning",true))
+                Toast.makeText(this,R.string.spoilerWarning,Toast.LENGTH_LONG).show();
             Log.d(LOG_TAG,"Article loaded with scale: " + _webView.getSettings().getTextZoom());
             _webView.setBackgroundColor(_nightMode ? Color.BLACK : Color.WHITE);
             _webView.loadDataWithBaseURL(null, _html, "text/html", "iso-8859-1", null);

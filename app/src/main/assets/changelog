@@ -1,20 +1,23 @@
 Troper 2.8
 ========
 
-2.8.2 Build 2826
-================
-[*] Possibly fixed an issue with the app crashing when switching tabs too quickly (Unreproducible, but addressed via crash logs).
-[*] Font scale toolbar now hides on touch outside of it
-[*] Added a warning about some setting changes not taking effect until after a restart of the app
-
 2.8.2
 ====
+Added:
 [*] New "Font Scaling" toolbar - change font size on the fly!
-[*] Zooming will no longer be using an old JavaScript hack that causes weird rotation issues.
-[*] Removed some junk code to improve parsing times for articles (if only by a little)
-[*] Fixed some minor theming issues with the search bar
-[*] Normalized the subpages dropdown theme
 [*] Added branding to our brand new Twitter account!
+[*] Added a warning about some setting changes not taking effect until after a restart of the app.
+
+Fixed:
+[*] Zooming will no longer be using an old JavaScript hack that causes weird rotation issues.
+[*] Possibly fixed an issue with the app crashing when switching tabs too quickly (Unreproducible, but addressed via crash logs).
+[*] Fixed some minor theming issues with the search bar.
+[*] Normalized the subpages dropdown theme.
+[*] The warning for spoilers not being hidden will now display correctly (if chosen so by the user in the settings page).
+
+Removed:
+[*] Removed some junk code to improve parsing times for articles (if only by a little)
+
 
 2.8.1
 ====
