@@ -30,6 +30,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -72,6 +73,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -101,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private final int TYPE_READLATER = 2;
     private final int TYPE_SEARCH = 3;
     private final int TYPE_SETTINGS = 4;
+    private final int TYPE_OFFLINE = 5;
     private final int FLAG_SETTINGS = 0;
     private final int FLAG_ABOUT = 1;
     private boolean _blockKey = false;
@@ -124,9 +128,13 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences _mainPreferences;
     private SharedPreferences _recentSettings;
     private SharedPreferences _favoriteSettings;
+    private SharedPreferences _offlineSettings;
     private SharedPreferences _readLaterSettings;
     private static SharedPreferences _tabState;
     private boolean _nightMode;
+    private boolean tabletView;
+    private File _cacheDir;
+    private File _offlineDir;
 
     /**
      * Tab variables
@@ -155,7 +163,10 @@ public class MainActivity extends AppCompatActivity {
         _recentSettings = getSharedPreferences("recentSettings",0);
         _favoriteSettings = getSharedPreferences("favoriteSettings",0);
         _readLaterSettings = getSharedPreferences("readlaterSettings",0);
+        _offlineSettings = getSharedPreferences("offlineSettings",0);
         _tabState = getSharedPreferences("tabState",0);
+        _cacheDir = ContextCompat.getExternalCacheDirs(this)[0];
+        _offlineDir = ContextCompat.getExternalFilesDirs(this,"offline")[0];
 
         //Set Rotation//
         if (_mainPreferences.getBoolean("lockRotation",false))
@@ -167,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Load the main view!!//
         _nightMode = _mainPreferences.getBoolean("nightMode",false);
+        tabletView = _mainPreferences.getBoolean("tabletView",false);
         setTheme(_nightMode ? R.style.AppDark : R.style.AppLight);
         setContentView(R.layout.activity_main);
 
@@ -284,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
 
         setNightMode(_nightMode);
         handleIntent(getIntent());
+        cacheCleanup();
         Log.d(LOG_TAG,"Theme is: " + this.getTheme().toString());
     }
 
@@ -301,7 +314,6 @@ public class MainActivity extends AppCompatActivity {
             {
                 String _name = _tabState.getString("tabName" + i,null);
                 String _url = _tabState.getString("tabUrl"+ i,null);
-//                String _html = tabSession.getString("tabHtml"+ i,null);
                 if (_name == null || _url == null)
                 {
                     Log.e(LOG_TAG,"Tried restoring a tab with a null name or url");
@@ -333,7 +345,6 @@ public class MainActivity extends AppCompatActivity {
             {
                 String _name = tabSession.getString("tabName" + i,null);
                 String _url = tabSession.getString("tabUrl"+ i,null);
-//                String _html = tabSession.getString("tabHtml"+ i,null);
                 if (_name == null || _url == null)
                 {
                     Log.e(LOG_TAG,"Tried restoring a tab with a null name or url");
@@ -363,10 +374,8 @@ public class MainActivity extends AppCompatActivity {
         {
             String _name = _tabListAdapter.getItem(i).getName();
             String _url = _tabListAdapter.getItem(i).getUrl();
-//            String _html = _tabListAdapter.getItem(i).getHtml();
             state.putString("tabName" + i,_name);
             state.putString("tabUrl" + i,_url);
-//            state.putString("tabHtml" + i, _html);
         }
         state.putInt("tabCount",_tabCount);
         int position = _tabList.getCheckedItemPosition();
@@ -602,6 +611,11 @@ public class MainActivity extends AppCompatActivity {
                 intent = new Intent(this,MyListActivity.class);
                 intent.setFlags(TYPE_READLATER);
                 startActivityForResult(intent, TYPE_READLATER);
+                break;
+            case R.id.main_offline:
+                intent = new Intent(this,MyListActivity.class);
+                intent.setFlags(TYPE_OFFLINE);
+                startActivityForResult(intent, TYPE_OFFLINE);
             default:
                 Log.w(LOG_TAG, "Main menu adapter sent an unknown position: " + menuTarget);
                 break;
@@ -868,25 +882,18 @@ public class MainActivity extends AppCompatActivity {
         if (_fragmentAdapter!= null && _fragmentAdapter.size() > 0) //There are articles
         {
             ArticleFragment _visibleFragment = _pager.getVisibleFragment();
-            if (_visibleFragment != null && _pager.getWebView(_pager.getCurrentItem()) != null && _pager.getWebView(_pager.getCurrentItem()).getVisibility() == View.VISIBLE) //An article is displayed
-            {
-                menu.findItem(R.id.action_shuffle).setVisible(true);
-                menu.findItem(R.id.action_favorite).setVisible(true);
-                menu.findItem(R.id.action_find).setVisible(true);
-                menu.findItem(R.id.action_share).setVisible(true);
-                menu.findItem(R.id.action_view_options).setVisible(true);
+            boolean isArticleShowing = _visibleFragment != null && _pager.getWebView(_pager.getCurrentItem()) != null && _pager.getWebView(_pager.getCurrentItem()).getVisibility() == View.VISIBLE;
+            menu.findItem(R.id.action_shuffle).setVisible(isArticleShowing);
+            menu.findItem(R.id.action_favorite).setVisible(isArticleShowing);
+            menu.findItem(R.id.action_saveOffline).setVisible(isArticleShowing);
+            menu.findItem(R.id.action_find).setVisible(isArticleShowing);
+            menu.findItem(R.id.action_share).setVisible(isArticleShowing);
+            menu.findItem(R.id.action_view_options).setVisible(isArticleShowing);
+            menu.findItem(R.id.action_refresh).setVisible(isArticleShowing);
+            if (isArticleShowing) {
                 MenuItem shareItem = menu.findItem(R.id.action_share);
                 ShareActionProvider _shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
                 _shareActionProvider.setShareIntent(getDefaultShareIntent());
-
-            }
-            else //No article displayed
-            {
-                menu.findItem(R.id.action_shuffle).setVisible(false);
-                menu.findItem(R.id.action_favorite).setVisible(false);
-                menu.findItem(R.id.action_find).setVisible(false);
-                menu.findItem(R.id.action_share).setVisible(false);
-                menu.findItem(R.id.action_view_options).setVisible(false);
             }
         }
         return true;
@@ -1013,10 +1020,18 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             case R.id.action_shuffle: //Random
-                getArticle("Random","http://tvtropes.org/pmwiki/randomitem.php",_pager.getCurrentItem());
+                getArticle("Random","http://tvtropes.org/pmwiki/randomitem.php",_pager.getCurrentItem(), false);
+                return true;
+            case R.id.action_refresh: //Refresh
+                _pager.getVisibleFragment().swipeContainer.setRefreshing(true);
+                _pager.getVisibleFragment().refreshCurrent();
                 return true;
             case R.id.action_favorite: //Add to favorites
                 addToFavorites(_pager.getVisibleArticle().getName(),_pager.getVisibleArticle().getUrl());
+                return true;
+            case R.id.action_saveOffline: //Save Offline
+                Article thisArticle = _pager.getVisibleArticle();
+               saveArticleOffline(thisArticle);
                 return true;
             case R.id.action_find:
                 MyWebView _webView = _pager.getWebView(_pager.getCurrentItem());
@@ -1115,7 +1130,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data)
     {
-        if (resultCode == RESULT_OK && (requestCode == TYPE_FAVORITES || requestCode == TYPE_READLATER || requestCode == TYPE_SEARCH || requestCode == TYPE_RECENT))
+        if (resultCode == RESULT_OK && (requestCode == TYPE_FAVORITES || requestCode == TYPE_READLATER || requestCode == TYPE_SEARCH || requestCode == TYPE_RECENT || requestCode == TYPE_OFFLINE))
         {
             String _name = data.getStringExtra("name");
             String _url = data.getStringExtra("url");
@@ -1126,13 +1141,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             animatedNewTab(_name, _url, true);
-        } else if (resultCode == RESULT_OK && requestCode == TYPE_SETTINGS)
-        {
-            Boolean restart = data.getBooleanExtra("restart",false);
-            if (restart)
-            {
-                System.exit(0);
-            }
         }
         else
             Log.i(LOG_TAG,"Activity returned error, see above");
@@ -1272,7 +1280,7 @@ public class MainActivity extends AppCompatActivity {
         _tabListAdapter.notifyDataSetChanged();
         _fragmentAdapter.add(_newFragment);
         _pageAdapter.notifyDataSetChanged();
-        getArticle(name, url, _fragmentAdapter.indexOf(_newFragment)); //_fragmentAdapter.indexOf(_newFragment) should technically be equal to newIndex
+        getArticle(name, url, _fragmentAdapter.indexOf(_newFragment), false); //_fragmentAdapter.indexOf(_newFragment) should technically be equal to newIndex
         if (moveNow){
             if (_pager.getChildCount() == 1)
             {
@@ -1391,7 +1399,7 @@ public class MainActivity extends AppCompatActivity {
         _blockKey = false;
     }
 
-    private void getArticle(String name, String url, int index)
+    private void getArticle(String name, String url, int index, boolean isRefresh)
     {
         //Get Article
         if (url == null || name == null || index < 0)
@@ -1404,7 +1412,7 @@ public class MainActivity extends AppCompatActivity {
         if (_pager.getCurrentItem() == index) //If the target tab is the currently displayed one
             setTitle(name);
         Log.d(LOG_TAG,"Getting Article #" + index + ": \"" + name + "\" (" + url + ")");
-        ArticleFetcher af = new ArticleFetcher(index, this);
+        ArticleFetcher af = new ArticleFetcher(index, this, isRefresh);
         _tabListAdapter.getItem(index).setArticleFetcher(af);
         af.execute(url, name);
     }
@@ -1419,6 +1427,7 @@ public class MainActivity extends AppCompatActivity {
             _tabListAdapter.replaceArticle(_id,_article);
             _tabListAdapter.notifyDataSetChanged();
             ArticleFragment _targetTab = _fragmentAdapter.get(_id); //Gets the fragment for the parsed tab
+
             if (addToHistory)
             {
                 _targetTab.addToHistory(_article);
@@ -1440,7 +1449,7 @@ public class MainActivity extends AppCompatActivity {
             RelativeLayout _loadingScreen = _pager.getLoadingScreen(_id);
             _loadingScreen.setVisibility(View.GONE);
             _webView.setVisibility(View.VISIBLE);
-
+            _targetTab.stopRefresh();
             if (_pager.getVisibleArticle().getIndex() == _article.getIndex()) //If this is the currently shown tab
             {
                 invalidateTitle();
@@ -1615,6 +1624,35 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void saveArticleOffline(Article article)
+    {
+        SharedPreferences.Editor editor = _offlineSettings.edit();
+        String _url = article.getUrl();
+        String _title = article.getName();
+        int hash = _url.hashCode();
+        _offlineDir.mkdirs();
+        Time now = new Time();
+        now.setToNow();
+        String _time = now.toString();
+        File offlineFile = new File(_offlineDir,String.valueOf(hash));
+        try { //save offline
+            if (offlineFile.exists())
+                offlineFile.delete();
+            offlineFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(offlineFile);
+            fos.write(article.getOrigHTML().getBytes());
+            fos.flush();
+            fos.close();
+            editor.putString(String.valueOf(hash) + "_url",_url);
+            editor.putString(String.valueOf(hash) + "_title", _title);
+            editor.putString(String.valueOf(hash) + "_time", _time);
+            editor.apply();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error caching document!");
+        }
+        Toast.makeText(this,"\"" + _title + "\" " + getString(R.string.savedOffline),Toast.LENGTH_SHORT).show();
+    }
+
     /**
      * A static String function that gets the article's title from its URL - albeit not spaced.
      * @param url the article's URL to parse
@@ -1632,6 +1670,7 @@ public class MainActivity extends AppCompatActivity {
     public class Article
     {
         private String _name;
+        private String _origHTML;
         private String _url;
         private String _html;
         private int _index;
@@ -1644,20 +1683,26 @@ public class MainActivity extends AppCompatActivity {
             _url = url;
             _index = index;
         }
-        public Article(String name, String url, int index, String html)
+        public Article(String name, String url, int index, String html, String origHTML)
         {
             _name = name;
             _url = url;
             _index = index;
             _html = html;
+            _origHTML = origHTML;
         }
-        public Article(String name, String url, int index, String html, ArrayList<Article> subPages)
+        public Article(String name, String url, int index, String html, String origHTML, ArrayList<Article> subPages)
         {
             _name = name;
             _url = url;
             _index = index;
             _html = html;
             _subPages = subPages;
+            _origHTML = origHTML;
+        }
+        public String getOrigHTML()
+        {
+            return _origHTML;
         }
         public void setSubPages(ArrayList<Article> subPages)
         {
@@ -1672,6 +1717,7 @@ public class MainActivity extends AppCompatActivity {
             _name = newArticle.getName();
             _url = newArticle.getUrl();
             _html = newArticle.getHtml();
+            _origHTML = newArticle.getOrigHTML();
             _subPages = newArticle.getSubPages();
         }
         public void updateIndex(int newIndex)
@@ -1746,7 +1792,7 @@ public class MainActivity extends AppCompatActivity {
                 if (_activeArticle.getUrl().equals(url)) //It's the already loaded page
                     return true;
                 else
-                    getArticle(name, url, _pager.getCurrentItem());
+                    getArticle(name, url, _pager.getCurrentItem(), false);
                 return true;
             } catch (Exception ex)
             {
@@ -1872,6 +1918,7 @@ public class MainActivity extends AppCompatActivity {
     public static class ArticleFragment extends Fragment {
         public Stack<Article> History;
         private MyWebView _webView;
+        private SwipeRefreshLayout swipeContainer;
 
         public ArticleFragment(){
             History = new Stack<Article>();
@@ -1893,14 +1940,41 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             //Set fragment local variables to interface
             Log.d(LOG_TAG,"Creating View...");
-
             View v = inflater.inflate(R.layout.tab_fragment,null);
             _webView = (MyWebView) v.findViewById(R.id.web_view);
             _webView.getSettings().setJavaScriptEnabled(true);
             registerForContextMenu(_webView);
+            swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
+
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    refreshCurrent();
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.at_dark,
+                    R.color.at_light);
             return v;
         }
 
+        public void stopRefresh()
+        {
+            swipeContainer.setRefreshing(false);
+        }
+
+        public void refreshCurrent()
+        {
+            swipeContainer.setRefreshing(true);
+            Article currentArticle = History.peek();
+            if (currentArticle != null) {
+                ((MainActivity) getActivity())._actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+                String _url = currentArticle.getUrl();
+                String _title = currentArticle.getName();
+                int _index = currentArticle.getIndex();
+                ((MainActivity) getActivity()).getArticle(_title,_url,_index, true);
+            }
+        }
         public int getHistorySize()
         {
             return History.size();
@@ -2006,11 +2080,17 @@ public class MainActivity extends AppCompatActivity {
         private int _id;
         private Exception _e = null;
         private Context _context;
+        private boolean _isRefresh = false;
+        private boolean _allowCaching = true;
+        private boolean _isCached = false;
+        private boolean _isOffline = false;
 
-        public ArticleFetcher(int id, Context context)
+        public ArticleFetcher(int id, Context context, boolean isRefresh)
         {
             _id = id;
             _context = context;
+            _isRefresh = isRefresh;
+            _allowCaching = _mainPreferences.getBoolean("allowCaching",true);
         }
         @Override
         protected Article doInBackground(String... args) {
@@ -2019,43 +2099,65 @@ public class MainActivity extends AppCompatActivity {
                 _url = args[0];
                 _name = args[1];
                 Document _doc;
-                Article _returnArticle;
                 if (isCancelled()) return null;
-                publishProgress(getString(R.string.Connecting),_name);
-                int _timeout = Integer.getInteger(_mainPreferences.getString("timeout","10"),10) * 1000;
-                try{
-                    Connection noCookie = Jsoup.connect(_url);
-                    noCookie.timeout(_timeout);
-                    Response _response = noCookie.execute();
-                    Document noJS = _response.parse();
-                    String cookieScript = noJS.head().getElementsByTag("script").first().html();
-                    cookieScript = cookieScript.substring(cookieScript.lastIndexOf('}'));
-                    Integer openParen = cookieScript.indexOf('(');
-                    Integer closeParen = cookieScript.indexOf(')');
-                    String cookieInfo = cookieScript.substring(openParen + 1, closeParen).replaceAll("'", "").replaceAll(" ", "");
-                    Log.i("CookieInfo", cookieInfo);
-                    String[] parts = cookieInfo.split(",");
-                    String cName = parts[0];
-                    String cIP = parts[1];
-                    Log.i(LOG_TAG, "Cookie name: " + cName);
-                    Log.i(LOG_TAG, "Cookie IP: " + cIP);
-                    if (isCancelled()) return null;
-                    publishProgress(getString(R.string.Loading),_name);
-                    Response resp = Jsoup.connect(_url).timeout(_timeout).cookie(cName, cIP).execute();
-                    Log.d(LOG_TAG,"Response Chatset:"+ resp.charset());
-                    _url = resp.url().toString();
-                    _doc = resp.parse();
-
-                } catch (IndexOutOfBoundsException e)
-                {
-                    Log.i(LOG_TAG,"No cookie received, going native!");
-                    if (isCancelled())
-                        return null;
-                    publishProgress(getString(R.string.Loading),_name);
-                    Response resp = Jsoup.connect(_url).timeout(_timeout).execute();
-                    _url = resp.url().toString();
-                    Log.d(LOG_TAG,"Response Chatset:"+resp.charset());
-                    _doc = resp.parse();
+                //Check if cached
+                _offlineDir.mkdirs();
+                _cacheDir.mkdirs();
+                File offlineFile = new File(_offlineDir,String.valueOf(_url.hashCode()));
+                File cacheFile = new File(_cacheDir,String.valueOf(_url.hashCode()));
+                if (offlineFile.exists() && !_isRefresh) {
+                    _doc = Jsoup.parse(offlineFile, "UTF-8");
+                    _isOffline = true;
+                }
+                else if (_name.equals("Random") || !cacheFile.exists() || _isRefresh || !_allowCaching) {
+                    publishProgress(getString(R.string.Connecting), _name);
+                    int _timeout = Integer.getInteger(_mainPreferences.getString("timeout", "10"), 10) * 1000;
+                    try {
+                        Connection noCookie = Jsoup.connect(_url);
+                        noCookie.timeout(_timeout);
+                        Response _response = noCookie.execute();
+                        Document noJS = _response.parse();
+                        String cookieScript = noJS.head().getElementsByTag("script").first().html();
+                        cookieScript = cookieScript.substring(cookieScript.lastIndexOf('}'));
+                        Integer openParen = cookieScript.indexOf('(');
+                        Integer closeParen = cookieScript.indexOf(')');
+                        String cookieInfo = cookieScript.substring(openParen + 1, closeParen).replaceAll("'", "").replaceAll(" ", "");
+                        Log.i("CookieInfo", cookieInfo);
+                        String[] parts = cookieInfo.split(",");
+                        String cName = parts[0];
+                        String cIP = parts[1];
+                        Log.i(LOG_TAG, "Cookie name: " + cName);
+                        Log.i(LOG_TAG, "Cookie IP: " + cIP);
+                        if (isCancelled()) return null;
+                        publishProgress(getString(R.string.Loading), _name);
+                        Response resp = Jsoup.connect(_url).timeout(_timeout).cookie(cName, cIP).execute();
+                        Log.d(LOG_TAG, "Response Chatset:" + resp.charset());
+                        _url = resp.url().toString();
+                        _doc = resp.parse();
+                    } catch (IndexOutOfBoundsException e) {
+                        Log.i(LOG_TAG, "No cookie received, going native!");
+                        if (isCancelled())
+                            return null;
+                        publishProgress(getString(R.string.Loading), _name);
+                        Response resp = Jsoup.connect(_url).timeout(_timeout).execute();
+                        _url = resp.url().toString();
+                        Log.d(LOG_TAG, "Response Chatset:" + resp.charset());
+                        _doc = resp.parse();
+                    }
+                    if (_allowCaching) {
+                        try { //Cache the document
+                            cacheFile.createNewFile();
+                            FileOutputStream fos = new FileOutputStream(cacheFile);
+                            fos.write(_doc.html().getBytes());
+                            fos.flush();
+                            fos.close();
+                        } catch (IOException e) {
+                            Log.e(LOG_TAG, "Error caching document!");
+                        }
+                    }
+                } else {    //File is cached
+                    _doc = Jsoup.parse(cacheFile,"UTF-8");
+                    _isCached = true;
                 }
                 if (_doc == null) //In case no document was received
                 {
@@ -2131,7 +2233,8 @@ public class MainActivity extends AppCompatActivity {
                 wikiText.select(".folder").attr("style","display:none");
 
                 //Add title
-                wikiText.prepend("<h1>" + _taskTitle + "</h1>");
+                if (!_isOffline) //For some reason offline files already have a header
+                    wikiText.prepend("<h1>" + _taskTitle + "</h1>");
 
                 //Set functions
                 String jsFunction = "<script type=\"text/javascript\">\n\n" +
@@ -2197,7 +2300,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //Replace all spoiler tags with the new internal format - IF defined so by the settings
-                if (_mainPreferences.getBoolean("showSpoilers", false) == false){ //If spoilers are hidden by default
+                if (!_mainPreferences.getBoolean("showSpoilers", false)){ //If spoilers are hidden by default
                     Elements spoilers = wikiText.select(".spoiler");
                     int i = 0;
                     for (Element spoiler : spoilers){
@@ -2237,7 +2340,7 @@ public class MainActivity extends AppCompatActivity {
                         ".folder li {\n" +
                         "  margin-botton: 3px;\n" +
                         "}\n";
-                boolean tabletView = _mainPreferences.getBoolean("tabletView",false);
+
                 Log.d(LOG_TAG,"Tabletmode: " + tabletView);
                 if (tabletView){
                     head+=
@@ -2265,7 +2368,6 @@ public class MainActivity extends AppCompatActivity {
                                     "div.acaptionright {\n" +
                                     "  position:relative;\n" +
                                     "  background:transparent;\n" +
-//                                    "  border:1px dotted #606060;\n" +
                                     "  padding:4px;\n" +
                                     "  padding-top:0px;\n" +
                                     "  margin:6px;\n" +
@@ -2299,7 +2401,6 @@ public class MainActivity extends AppCompatActivity {
                                     "div.acaptionright {\n" +
                                     "  position:relative;\n" +
                                     "  background:transparent;\n" +
-//                                    "  border:1px dotted #606060;\n" +
                                     "  padding:4px;\n" +
                                     "  padding-top:0px;\n" +
                                     "  margin:6px;\n" +
@@ -2315,7 +2416,7 @@ public class MainActivity extends AppCompatActivity {
                 String finalHTML = "<html>" + head + "<body onload=\"" + mode + "\"><div id=\"contentRoot\">" + wikiText.html() + "</div></body></html>";
                 if (isCancelled()) return null;
                 //Return final result
-                return new Article(_name,_url,_id,finalHTML, _subPages);
+                return new Article(_name,_url,_id,finalHTML, _doc.html(), _subPages);
             }
             catch (UnknownHostException e)
             {
@@ -2366,18 +2467,19 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute()
         {
-            View _loadingScreen = _pager.getLoadingScreen(_id);
-            if (_loadingScreen == null)
-            {
-                Log.e(LOG_TAG,"Loading screen is null!");
-                this.cancel(true);
-                return;
+            if (!_isRefresh) {
+                View _loadingScreen = _pager.getLoadingScreen(_id);
+                if (_loadingScreen == null) {
+                    Log.e(LOG_TAG, "Loading screen is null!");
+                    this.cancel(true);
+                    return;
+                }
+                TextView _mainText = (TextView) _loadingScreen.findViewById(R.id.txtLoadingTitle);
+                TextView _subText = (TextView) _loadingScreen.findViewById(R.id.txtLoadingData);
+                _mainText.setText(R.string.Loading);
+                _subText.setText("");
+                _loadingScreen.setVisibility(View.VISIBLE);
             }
-            TextView _mainText = (TextView) _loadingScreen.findViewById(R.id.txtLoadingTitle);
-            TextView _subText = (TextView) _loadingScreen.findViewById(R.id.txtLoadingData);
-            _mainText.setText(R.string.Loading);
-            _subText.setText("");
-            _loadingScreen.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -2388,16 +2490,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(LOG_TAG,"Thread has cancelled!");
                 return;
             }
-            View _loadingScreen = _pager.getLoadingScreen(_id);
-            if (_loadingScreen == null)
-            {
-                Log.e(LOG_TAG,"Could not find loading screen for article, canceling load!!");
-                Log.e(LOG_TAG,"ID: " + _id);
-                Log.e(LOG_TAG,"Cancelled: " + this.isCancelled());
-                this.cancel(true);
-                return;
+            if (!_isRefresh) {
+                View _loadingScreen = _pager.getLoadingScreen(_id);
+                if (_loadingScreen == null) {
+                    Log.e(LOG_TAG, "Could not find loading screen for article, canceling load!!");
+                    Log.e(LOG_TAG, "ID: " + _id);
+                    Log.e(LOG_TAG, "Cancelled: " + this.isCancelled());
+                    this.cancel(true);
+                    return;
+                }
+                _loadingScreen.setVisibility(View.GONE);
             }
-            _loadingScreen.setVisibility(View.GONE);
+            if (_isOffline)
+                Toast.makeText(getApplicationContext(), R.string.isOffline, Toast.LENGTH_SHORT).show();
             if (article == null || _e != null)
             {
                 String _message = getString(R.string.articleError);
@@ -2421,7 +2526,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.setPositiveButton(R.string.retry,new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        getArticle(_name,_url,_id);
+                        getArticle(_name,_url,_id, false);
                         return;
                     }
                 });
@@ -2436,7 +2541,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
                 return;
             }
-            parseArticle(article, true);
+            parseArticle(article, !_isRefresh);
         }
         public void updateIndex(int index)
         {
@@ -2480,7 +2585,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean moveNow = _mainPreferences.getBoolean("moveNow",false);
                 newTab(_name,url,moveNow);
             } else {
-                getArticle(_name, url, _id);
+                getArticle(_name, url, _id, false);
             }
             return true;
         }
@@ -2588,6 +2693,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     /**
      * Used to decode bitmaps for lower memory consumption
      */
@@ -2630,5 +2736,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return inSampleSize;
+    }
+
+    public void cacheCleanup()
+    {
+        int daysToKeep = Integer.valueOf(_mainPreferences.getString("cacheDays","7"));
+        if (daysToKeep == 0)
+            return;
+        DateTime now = new DateTime();
+        File[] cachedFiles = _cacheDir.listFiles();
+        for (File cachedFile : cachedFiles)
+        {
+            DateTime fileTime = new DateTime(cachedFile.lastModified());
+            Duration dur = new Duration(fileTime,now);
+            long diff = dur.getStandardDays();
+            if (diff > daysToKeep)
+                cachedFile.delete();
+        }
     }
 }

@@ -2,10 +2,13 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="@string/clearAll"
+        android:id="@+id/action_clear_all"
+        android:icon="@drawable/ic_trash"
+        app:showAsAction="always"/>
     <item
         android:title="@string/Sort"
         android:icon="@drawable/ic_sort"
-
         app:showAsAction="always|withText">
         <menu>
             <group android:checkableBehavior="single">

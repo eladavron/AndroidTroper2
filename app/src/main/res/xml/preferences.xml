@@ -74,6 +74,25 @@
             android:title="@string/highlightSpoilers" />
 
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cacheSettings">
+        <CheckBoxPreference
+            android:key="allowCaching"
+            android:defaultValue="true"
+            android:title="@string/allowCaching"/>
+
+        <EditTextPreference android:title="@string/cacheDays"
+            android:defaultValue="7"
+            android:inputType="number"
+            android:key="cacheDays"/>
+
+        <Preference
+            android:key="clearCache"
+            android:title="@string/clearCache"
+            android:summary="@string/currentCache"/>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/recentList" >
         <ListPreference
             android:key="recentSortDefault"
@@ -107,6 +126,20 @@
             android:title="@string/clearFavorites"
             android:summary="@string/favoriteCount"/>
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/offlineSettings">
+        <ListPreference
+            android:key="offlineSortDefault"
+            android:title="@string/sortMethod"
+            android:entries="@array/sortTypes"
+            android:entryValues="@array/sortTypesData"
+            />
+        <Preference
+            android:key="clearOffline"
+            android:title="@string/clearOffline"
+            android:summary="@string/offlineCount"/>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/add_to_rl">
         <ListPreference
             android:key="rlSortDefault"

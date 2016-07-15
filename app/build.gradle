@@ -31,4 +31,5 @@ dependencies {
     compile 'com.android.support:preference-v14:23.+'
     compile 'org.jsoup:jsoup:1.9.2'
     compile 'com.android.support:cardview-v7:23.+'
+    compile 'joda-time:joda-time:2.9.4'
 }

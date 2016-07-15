@@ -1,5 +1,13 @@
-Troper 2.8
-========
+Troper
+======
+
+2.9
+===
+Added:
+[*] Offline Articles: save articles for reading even when you have no connection.
+[*] Caching! Re-visiting a page should now be much faster (also works offline if cached)
+[*] You can now delete all contents of a list (Favorites, Recent, Offline, etc.) from the list itself.
+[*] Pull down to refresh to get the newest version of an article.
 
 2.8.2
 ====

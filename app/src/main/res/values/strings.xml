@@ -17,6 +17,7 @@
     <string name="Loading">Loading</string>
     <string name="Parsing">Parsing</string>
     <string name="Connecting">Connecting</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Settings page -->
     <string name="displaySettings">Display Settings</string>
@@ -57,6 +58,8 @@
     <string name="clearReadLater">Clear \'Read-Later\' list</string>
     <string name="confirmClearFavorites">Are you sure you want to clear all your favorites?</string>
     <string name="confirmClearReadLater">Are you sure you want to clear your \'Read-Later\' list?</string>
+    <string name="confirmClearCache">Are you sure you want to clear the cache?\nThis will not delete files saved offline manually or the favorites.</string>
+    <string name="confirmClearOffline">Are you sure you want to clear all offline files?</string>
     <string name="clearFavoritesSuccess">Favorites cleared!</string>
     <string name="clearReadLaterSuccess">\'Read-Later\' list cleared!</string>
     <string name="tabletView">Tablet View</string>
@@ -65,7 +68,16 @@
     <string name="saveTabs">Save open tabs (if any) before exiting</string>
     <string name="defaultFont">Font Scale</string>
     <string name="fontMinus">Decrease Font Size</string>
-    <string name="someChanges">Some changes will only take effect the next time you start Troper</string>
+    <string name="cacheSettings">Cache Settings</string>
+    <string name="allowCaching">Allow Caching</string>
+    <string name="currentCache">Current Cache Size:</string>
+    <string name="clearCache">Clear Cache</string>
+    <string name="savedOffline">saved for offline reading.</string>
+    <string name="offlineSettings">Offline Articles</string>
+    <string name="clearOffline">Delete all offline files</string>
+    <string name="offlineCount">Number of saved article:</string>
+    "
+    <string name="clearAll">Delete All</string>
 
     <!-- Menu Elements -->
     <string name="menu_open_new">Open in new tab</string>
@@ -91,6 +103,7 @@
     <string name="alreadyInReadLater">already in \'Read-Later\' list.</string>
     <string name="favoritesEmpty">Your Favorites are empty!</string>
     <string name="readLaterEmpty">Your \'Read-Later\' list is empty!</string>
+    <string name="offlineFilesEmpty">No files saved for offline reading!</string>
     <string name="recentEmpty">There are no items in your history!</string>
     <string name="listEmpty">The list is empty!</string>
     <string name="findInPage">Find in Page</string>
@@ -105,6 +118,13 @@
     <string name="incomingError">There was a problem with the incoming article\'s URL.</string>
     <string name="neverAsk">Never ask me again!</string>
     <string name="spoilerWarning">Warning! Spoilers are not hidden!\nYou can change this in the app\'s Settings page.</string>
+    <string name="saveOffline">Save Offline</string>
+    <string name="fileSaved">Article saved for offline viewing.</string>
+    <string name="isCached">File loaded from cache.\nPull down to refresh!</string>
+    <string name="isOffline">File loaded from storage.\nPull down to refresh!</string>
+    <string name="cacheDays">Days to keep cache: (0 for unlimited)</string>
+    <string name="days">days</string>
+    <string name="unlimited">Unlimited</string>
 
     <!--Search Strings-->
     <string name="searchSettings">Search Settings</string>
@@ -128,6 +148,7 @@
     <string name="cc">This work is licensed under a <a href='http://creativecommons.org/licenses/by-nc-sa/3.0/'>Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</string>
     <string name="usesLibraries"><u>This application uses the following libraries:</u></string>
     <string name="jsoup">• <a href='http://jsoup.org/'>jsoup-1.9.2</a></string>
+    <string name="joda">• <a href='https://github.com/JodaOrg/joda-time'>joda-time 2.9.4</a></string>
     <string name="changelog"><u>Changelog:</u></string>
     <string name="github">Source code available at <a href='https://github.com/eladavron/AndroidTroper2'>GitHub</a>!</string>
 
@@ -140,12 +161,10 @@
 
     <!-- Update -->
     <string name="updateTitle">\"Troper\" has been Updated!</string>
-    <string name="updateSummary">Version 2.8.2:\n
-        • \"Android Troper\" is now just \"Troper\" due to Google\'s new guidelines.\n
-        • Added new \"Font Scale\" toolbar.\n
-        • Zooming is now native (Chrome like).\n
-        • Refreshed the app\'s themes.\n
-        • Updated a lot of behind-the-scenes stuff.\n
+    <string name="updateSummary">Version 2.9:\n
+        • Offline Mode! Save articles offline to read them even without a connection.\n
+        • Caching - re-visited articles should now load much faster.\n
+        • Pull down an article to refresh it to its latest version.\n
         \n
         <b>PLEASE</b> join the beta program!\n
         I really need testers!\n

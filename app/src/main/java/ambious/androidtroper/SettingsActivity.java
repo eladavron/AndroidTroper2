@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,10 +55,12 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences _mainPreferences;
     ActionBar _actionBar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) { //OnCreate of the settings activity
         super.onCreate(savedInstanceState);
         _mainPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         setTheme(_mainPreferences.getBoolean("nightMode",false) ? R.style.AppDark : R.style.AppLight);
         //Get Intent//
         Intent _intent = getIntent();
@@ -209,6 +210,9 @@ public class SettingsActivity extends AppCompatActivity {
         private SharedPreferences _mainPreferences;
         private SharedPreferences _readLaterSettings;
         private SharedPreferences _favoriteSettings;
+        private SharedPreferences _offlineSettings;
+        private File _cacheDir;
+        private File _offlineDir;
 
         SearchRecentSuggestions suggestions;
 
@@ -322,6 +326,84 @@ public class SettingsActivity extends AppCompatActivity {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     preference.setSummary(newValue.toString() + "%");
+                    return true;
+                }
+            });
+
+            //Cache Settings
+            _cacheDir = ContextCompat.getExternalCacheDirs(getContext())[0];
+            Preference clearCache = findPreference("clearCache");
+            _cacheDir.mkdirs();
+            File cache[] = _cacheDir.listFiles();
+            long cacheSize = 0;
+            for (File cacheFile : cache)
+            {
+                cacheSize += cacheFile.length() / 1024;
+            }
+            clearCache.setSummary(getString(R.string.currentCache) + " " + String.valueOf(cacheSize) + " KB");
+            clearCache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(final Preference preference) {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                    alertDialog.setTitle(R.string.confirmTitle);
+                    alertDialog.setMessage(R.string.confirmClearCache);
+                    alertDialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            File cache[] = _cacheDir.listFiles();
+                            for (File cacheFile : cache)
+                                cacheFile.delete();
+                            preference.setSummary(getString(R.string.currentCache) + " 0 KB");
+                        }
+                    });
+                    alertDialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    });
+                    alertDialog.show();
+                    return true;
+                }
+            });
+
+            EditTextPreference cacheDays = (EditTextPreference) findPreference("cacheDays");
+            cacheDays.setSummary(cacheDays.getText().equals("0") ? getString(R.string.unlimited) : cacheDays.getText() + " " + getString(R.string.days));
+            cacheDays.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    preference.setSummary(o.toString().equals("0") ? getString(R.string.unlimited) : o.toString() + " " + getString(R.string.days));
+                    return true;
+                }
+            });
+
+            //Saved Articles
+            _offlineDir = ContextCompat.getExternalFilesDirs(getContext(),"offline")[0];
+            Preference clearOffline = findPreference("clearOffline");
+            _offlineDir.mkdirs();
+            File offline[] = _offlineDir.listFiles();
+            int offlineCount = offline.length;
+            clearOffline.setSummary(getString(R.string.offlineCount) + " " + String.valueOf(offlineCount));
+            clearOffline.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(final Preference preference) {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                    alertDialog.setTitle(R.string.confirmTitle);
+                    alertDialog.setMessage(R.string.confirmClearOffline);
+                    alertDialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            File offline[] = _offlineDir.listFiles();
+                            for (File offlineFile : offline)
+                                offlineFile.delete();
+                            preference.setSummary(getString(R.string.offlineCount) + " 0");
+                            _offlineSettings = getContext().getSharedPreferences("offlineSettings",0);
+                            _offlineSettings.edit().clear().apply();
+                        }
+                    });
+                    alertDialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    });
+                    alertDialog.show();
                     return true;
                 }
             });
@@ -492,15 +574,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onDestroy()
-        {
-            Toast.makeText(getContext(),R.string.someChanges,Toast.LENGTH_LONG).show();
-            super.onDestroy();
-        }
-
-        @Override
         public void onCreatePreferences(Bundle bundle, String s) {
-            
+
         }
 
         private void performBackup() {

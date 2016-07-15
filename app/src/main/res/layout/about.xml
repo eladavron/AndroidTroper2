@@ -85,6 +85,14 @@
                 android:linksClickable="true"
                 android:clickable="true"/>
 
+            <TextView
+                android:id="@+id/joda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/joda"
+                android:linksClickable="true"
+                android:clickable="true"/>
+
 
             <TextView
                 android:layout_width="wrap_content"
