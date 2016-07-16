@@ -165,6 +165,7 @@
         • Offline Mode! Save articles offline to read them even without a connection.\n
         • Caching - re-visited articles should now load much faster.\n
         • Pull down an article to refresh it to its latest version.\n
+        • Fixed a bug that caused the app to crash after closing a tab.\n
         \n
         <b>PLEASE</b> join the beta program!\n
         I really need testers!\n

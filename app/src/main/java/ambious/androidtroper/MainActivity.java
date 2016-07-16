@@ -1391,6 +1391,7 @@ public class MainActivity extends AppCompatActivity {
         _pageAdapter.notifyDataSetChanged();
         _pager.setOffscreenPageLimit(_pager.getOffscreenPageLimit() - 1);
         _pager.invalidate();
+        _pager.invalidateIndices();
         _tabListAdapter.remove(_tabListAdapter.getItem(index));
         _tabListAdapter.notifyDataSetChanged();
         _tabListAdapter.invalidateIndices();
@@ -2017,7 +2018,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        /**
+         /**
          * I have no idea how this works - I copied most of this from a custom class created by http://stackoverflow.com/users/325479/mikepenz - mentioned in http://stackoverflow.com/questions/9061325/fragmentpageradapter-is-not-removing-items-fragments-correctly
          */
         @Override
@@ -2596,6 +2597,11 @@ public class MainActivity extends AppCompatActivity {
             Log.e(LOG_TAG, "WebBrowser Error: " + description + "(" + errorCode + ")");
             view.loadData(errorMessage, "text/html", "ISO-8859-1");
         }
+
+        public void changeID(int id)
+        {
+            _id = id;
+        }
     }
 
 
@@ -2632,6 +2638,15 @@ public class MainActivity extends AppCompatActivity {
             if (this.getChildCount() == 0)
                 return null;
             return _tabListAdapter.getItem(this.getCurrentItem());
+        }
+
+        public void invalidateIndices()
+        {
+            for (int i=0;i<this.getChildCount();i++)
+            {
+                InternalWebViewClient iwvc = (InternalWebViewClient) this.getWebView(i).getWebViewClient();
+                iwvc.changeID(i);
+            }
         }
     }
 

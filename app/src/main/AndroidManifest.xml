@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="ambious.androidtroper"
-          android:versionCode="2900"
+          android:versionCode="2901"
           android:versionName="2.9" >
 
     <uses-permission android:name="android.permission.INTERNET" />

@@ -9,6 +9,9 @@ Added:
 [*] You can now delete all contents of a list (Favorites, Recent, Offline, etc.) from the list itself.
 [*] Pull down to refresh to get the newest version of an article.
 
+Fixed:
+[*] The program will no longer crash after clicking any link following the closing of an older tab
+
 2.8.2
 ====
 Added:
