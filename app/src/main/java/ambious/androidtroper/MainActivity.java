@@ -1391,10 +1391,10 @@ public class MainActivity extends AppCompatActivity {
         _pageAdapter.notifyDataSetChanged();
         _pager.setOffscreenPageLimit(_pager.getOffscreenPageLimit() - 1);
         _pager.invalidate();
-        _pager.invalidateIndices();
         _tabListAdapter.remove(_tabListAdapter.getItem(index));
         _tabListAdapter.notifyDataSetChanged();
         _tabListAdapter.invalidateIndices();
+        _pager.invalidateIndices();
         invalidateTitle();
         invalidateOptionsMenu();
         _blockKey = false;
@@ -1411,7 +1411,10 @@ public class MainActivity extends AppCompatActivity {
         }
         url = uriParse(url);
         if (_pager.getCurrentItem() == index) //If the target tab is the currently displayed one
+        {
             setTitle(name);
+            _actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        }
         Log.d(LOG_TAG,"Getting Article #" + index + ": \"" + name + "\" (" + url + ")");
         ArticleFetcher af = new ArticleFetcher(index, this, isRefresh);
         _tabListAdapter.getItem(index).setArticleFetcher(af);
@@ -1724,7 +1727,8 @@ public class MainActivity extends AppCompatActivity {
         public void updateIndex(int newIndex)
         {
             _index = newIndex;
-            _af.updateIndex(newIndex);
+            if (_af != null)
+                _af.updateIndex(newIndex);
         }
 
         public String getName()
@@ -2542,6 +2546,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
                 return;
             }
+            article.updateIndex(_id);
             parseArticle(article, !_isRefresh);
         }
         public void updateIndex(int index)
@@ -2644,8 +2649,11 @@ public class MainActivity extends AppCompatActivity {
         {
             for (int i=0;i<this.getChildCount();i++)
             {
-                InternalWebViewClient iwvc = (InternalWebViewClient) this.getWebView(i).getWebViewClient();
-                iwvc.changeID(i);
+                InternalWebViewClient iwvc = null;
+                if (this.getWebView(i) != null)
+                    iwvc = (InternalWebViewClient) this.getWebView(i).getWebViewClient();
+                if (iwvc != null)
+                    iwvc.changeID(i);
             }
         }
     }
