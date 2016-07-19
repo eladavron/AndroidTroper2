@@ -1431,12 +1431,12 @@ public class MainActivity extends AppCompatActivity {
             _tabListAdapter.replaceArticle(_id,_article);
             _tabListAdapter.notifyDataSetChanged();
             ArticleFragment _targetTab = _fragmentAdapter.get(_id); //Gets the fragment for the parsed tab
-
             if (addToHistory)
             {
                 _targetTab.addToHistory(_article);
                 addToRecent(_name, _url);
             }
+            _targetTab.setCurrentArticle(_article);
             MyWebView _webView = _pager.getWebView(_id);
             _webView.setWebViewClient(new InternalWebViewClient(_id));
             _webView.getSettings().setDefaultTextEncodingName("iso-8859-1");
@@ -1923,6 +1923,7 @@ public class MainActivity extends AppCompatActivity {
     public static class ArticleFragment extends Fragment {
         public Stack<Article> History;
         private MyWebView _webView;
+        private Article _currentArticle;
         private SwipeRefreshLayout swipeContainer;
 
         public ArticleFragment(){
@@ -1971,14 +1972,21 @@ public class MainActivity extends AppCompatActivity {
         public void refreshCurrent()
         {
             swipeContainer.setRefreshing(true);
-            Article currentArticle = History.peek();
-            if (currentArticle != null) {
+            if (_currentArticle != null) {
                 ((MainActivity) getActivity())._actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                String _url = currentArticle.getUrl();
-                String _title = currentArticle.getName();
-                int _index = currentArticle.getIndex();
+                String _url = _currentArticle.getUrl();
+                String _title = _currentArticle.getName();
+                int _index = _currentArticle.getIndex();
                 ((MainActivity) getActivity()).getArticle(_title,_url,_index, true);
             }
+        }
+        public Article getCurrentArticle()
+        {
+            return _currentArticle;
+        }
+        public void setCurrentArticle(Article article)
+        {
+            _currentArticle = article;
         }
         public int getHistorySize()
         {

@@ -11,6 +11,7 @@ Added:
 
 Fixed:
 [*] The program will no longer crash after clicking any link following the closing of an older tab
+[*] Fixed a bug that would occasionally cause a crash while refreshing (Build 2903)
 
 2.8.2
 ====
