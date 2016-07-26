@@ -1,6 +1,14 @@
 Troper
 ======
 
+2.9.1
+=====
+Fixed:
+[*] The app will no longer crash on startup if it fails clearing cache
+
+Removed:
+[*] The bin icon when closing tabs caused crashes for a lot of people so it has been removed.
+
 2.9
 ===
 Added:

@@ -14,8 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -288,7 +286,6 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(getResources(), R.drawable.logo, options);
-        BitmapFactory.decodeResource(getResources(), R.drawable.trash, options);
         ImageView logoView = (ImageView) findViewById(R.id.logo);
         if (logoView != null) {
             logoView.setImageBitmap(decodeSampledBitmapFromResource(getResources(), R.drawable.logo, width, height));
@@ -1335,19 +1332,12 @@ public class MainActivity extends AppCompatActivity {
             final Animation animOut = AnimationUtils.loadAnimation(this,R.anim.zoom_out);
             animOut.setAnimationListener(blockKeyListener);
             View pageViewToRemove = _pager.getChildAt(index);
-            FrameLayout tabToRemove = (FrameLayout) pageViewToRemove.findViewById(R.id.frame_layout);
+            final FrameLayout tabToRemove = (FrameLayout) pageViewToRemove.findViewById(R.id.frame_layout);
 
             if (_pager.getCurrentItem() == index) //If the currently removed tab is displayed
             {
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int width = size.x;
-                int height = size.y;
-                Drawable trash = new BitmapDrawable(getResources(),decodeSampledBitmapFromResource(getResources(), R.drawable.trash, width, height));
                 tabToRemove.findViewById(R.id.tintOverlay).setVisibility(View.VISIBLE);
                 tabToRemove.findViewById(R.id.tintOverlay).bringToFront();
-                tabToRemove.setForeground(trash);
                 tabToRemove.setForegroundGravity(Gravity.CENTER);
                 tabToRemove.startAnimation(animOut);
                 new Handler().postDelayed(new Runnable() {
@@ -2771,18 +2761,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void cacheCleanup()
     {
-        int daysToKeep = Integer.valueOf(_mainPreferences.getString("cacheDays","7"));
-        if (daysToKeep == 0)
-            return;
-        DateTime now = new DateTime();
-        File[] cachedFiles = _cacheDir.listFiles();
-        for (File cachedFile : cachedFiles)
+        try {
+            int daysToKeep = Integer.valueOf(_mainPreferences.getString("cacheDays", "7"));
+            if (daysToKeep == 0)
+                return;
+            DateTime now = new DateTime();
+            File[] cachedFiles = _cacheDir.listFiles();
+            for (File cachedFile : cachedFiles) {
+                DateTime fileTime = new DateTime(cachedFile.lastModified());
+                Duration dur = new Duration(fileTime, now);
+                long diff = dur.getStandardDays();
+                if (diff > daysToKeep)
+                    cachedFile.delete();
+            }
+        }
+        catch (Exception ex)
         {
-            DateTime fileTime = new DateTime(cachedFile.lastModified());
-            Duration dur = new Duration(fileTime,now);
-            long diff = dur.getStandardDays();
-            if (diff > daysToKeep)
-                cachedFile.delete();
+            Log.e(LOG_TAG,"Failed to clear cache!\n");
+            ex.printStackTrace();
         }
     }
 }

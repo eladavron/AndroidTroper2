@@ -161,11 +161,9 @@
 
     <!-- Update -->
     <string name="updateTitle">\"Troper\" has been Updated!</string>
-    <string name="updateSummary">Version 2.9:\n
-        • Offline Mode! Save articles offline to read them even without a connection.\n
-        • Caching - re-visited articles should now load much faster.\n
-        • Pull down an article to refresh it to its latest version.\n
-        • Fixed a bug that caused the app to crash after closing a tab.\n
+    <string name="updateSummary">Version 2.9.1:\n
+        • The app will no longer crash on startup if it fails clearing cache.\n
+        • The closing tab graphic caused crashes so it has been removed.\n
         \n
         <b>PLEASE</b> join the beta program!\n
         I really need testers!\n
