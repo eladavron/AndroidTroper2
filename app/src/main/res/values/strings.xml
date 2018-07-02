@@ -161,14 +161,11 @@
 
     <!-- Update -->
     <string name="updateTitle">\"Troper\" has been Updated!</string>
-    <string name="updateSummary">Version 2.9.1:\n
-        • The app will no longer crash on startup if it fails clearing cache.\n
-        • The closing tab graphic caused crashes so it has been removed.\n
-        \n
-        <b>PLEASE</b> join the beta program!\n
-        I really need testers!\n
-        You can join through our website (link in the main app page)\n
-        \n
+    <string name="updateSummary">Version 2.9.2:\n
+        • Fixed pages not loading.\n
+        \n\n
+        Keep in mind that I do have a full time day-job now so future updates might take longer.
+        \n\n
         A more detailed update log can be found in the \"About\".\n
         Don\'t worry, this message only appears once per update!</string>
 </resources>

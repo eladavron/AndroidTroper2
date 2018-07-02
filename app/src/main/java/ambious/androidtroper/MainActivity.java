@@ -2184,7 +2184,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isCancelled()) return null;
                 publishProgress(getString(R.string.Parsing),_name);
                 //Start parsing the actual article
-                Element wikiText = _doc.getElementsByClass("page-content").first();
+                Element wikiText = _doc.getElementsByClass("article-content").first();
                 if (wikiText == null) //In case it wasn't parsable
                     throw new Exception("Document did not parse correctly and is probably of an unsupported type!");
 
