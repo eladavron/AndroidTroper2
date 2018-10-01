@@ -3,4 +3,5 @@ I will no longer be maintaining Troper, given that I have a full-time day-job no
 Feel free to fork, copy, download, build, compile, or fix whatever you wish. You have my full permission to continue the project on your own if you so wish.
 
 Be excellent to each other,
-Elad
+
+-Elad
